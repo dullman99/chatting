@@ -7,6 +7,7 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: #0f0f0f; color: #e5e5e5; font-family: -apple-system, sans-serif; min-height: 100vh; }
+
   .topbar { background: #1a1a1a; padding: 14px 20px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 10; border-bottom: 1px solid #2a2a2a; }
   .logo { font-size: 15px; font-weight: 600; color: #fff; white-space: nowrap; }
   .search-wrap { flex: 1; position: relative; }
@@ -15,12 +16,17 @@
   .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #888; font-size: 15px; pointer-events: none; }
   .refresh-btn { background: #7F77DD; color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 13px; cursor: pointer; white-space: nowrap; }
   .refresh-btn:hover { background: #6a62c4; }
+
   .count-bar { padding: 12px 20px 4px; font-size: 13px; color: #888; }
   .count-bar span { color: #9b8ff0; font-weight: 600; }
+
   .filter-bar { padding: 6px 20px 10px; display: flex; gap: 8px; flex-wrap: wrap; }
   .filter-chip { background: #2a2a2a; border: 1px solid #3a3a3a; border-radius: 16px; padding: 4px 12px; font-size: 12px; color: #aaa; cursor: pointer; transition: all 0.15s; }
   .filter-chip.active { background: #7F77DD; border-color: #7F77DD; color: #fff; }
+  .monetize-chip.active { background: #7F77DD; border-color: #7F77DD; color: #fff; }
+
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; padding: 0 20px 30px; }
+
   .card { background: #1e1e1e; border-radius: 10px; border: 1px solid #2a2a2a; overflow: hidden; cursor: pointer; transition: transform 0.15s, border-color 0.15s; }
   .card:hover { transform: translateY(-2px); border-color: #7F77DD; }
   .thumb { width: 100%; aspect-ratio: 16/9; background: #2a2a2a; overflow: hidden; }
@@ -36,8 +42,10 @@
   .badge-monetize { display: inline-block; background: #7F77DD22; color: #9b8ff0; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 12px; }
   .card-bottom { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
   .card-type { font-size: 11px; color: #555; }
+
   .empty { text-align: center; padding: 60px 20px; color: #555; font-size: 15px; }
   .loading { text-align: center; padding: 60px 20px; color: #666; font-size: 14px; }
+
   @media (max-width: 600px) {
     .grid { grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 12px 20px; }
     .card-title { font-size: 12px; }
@@ -62,10 +70,11 @@
 </div>
 
 <script>
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzVUesIOCzRjschSpYLBOlKX-nhHSVPtjAEIRXNuWyrL5qcLVVMG5iEEqOGAN384iY2/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw2mwsZ6dy6qxb4YFerXNb8dAg77jy43MkK4u5zZtjPu89gcDdhDw-gr9bGM9I6D-MC/exec';
 
 let allData = [];
 let activeType = '';
+let activeMonetize = false;
 
 async function loadData() {
   document.getElementById('grid').innerHTML = '<div class="loading">⏳ 데이터 불러오는 중...</div>';
@@ -84,14 +93,28 @@ async function loadData() {
 function buildFilters() {
   const types = [...new Set(allData.map(d => d.type).filter(Boolean))];
   const bar = document.getElementById('filterBar');
-  bar.innerHTML = '<span class="filter-chip active" onclick="setType(\'\', this)">전체</span>';
+  bar.innerHTML = `
+    <span class="filter-chip active" onclick="setType('', this)">전체</span>
+    <span class="filter-chip monetize-chip" onclick="setMonetize(this)">#수익화</span>
+  `;
   types.forEach(t => {
     bar.innerHTML += `<span class="filter-chip" onclick="setType('${t}', this)">${t}</span>`;
   });
 }
 
+function setMonetize(el) {
+  activeMonetize = !activeMonetize;
+  el.classList.toggle('active', activeMonetize);
+  if (activeMonetize) {
+    activeType = '';
+    document.querySelectorAll('.filter-chip:not(.monetize-chip)').forEach(c => c.classList.remove('active'));
+  }
+  applyFilter();
+}
+
 function setType(type, el) {
   activeType = type;
+  activeMonetize = false;
   document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
   applyFilter();
@@ -100,6 +123,7 @@ function setType(type, el) {
 function applyFilter() {
   const q = document.getElementById('searchInput').value.toLowerCase().trim();
   let filtered = allData;
+  if (activeMonetize) filtered = filtered.filter(d => d.monetize);
   if (activeType) filtered = filtered.filter(d => d.type === activeType);
   if (q) {
     filtered = filtered.filter(d =>
