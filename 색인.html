@@ -346,8 +346,7 @@
 </main>
 
 <script>
-const SHEET_ID = '1QAcSEyW5GE5CTrTO-K3V-kNG09Gg2j4_kt84ANzNGaE';
-const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzPTep6HulziD6qrgCkFpNk1Vy6XzeWyZE1-B2aLQO8tmDo-4Bt2VYXRuMddCTNc2fc/exec';
 
 let allData = [];
 let keywordMap = {}; // keyword -> [videos]
@@ -396,25 +395,21 @@ function normalizeKeyword(kw) {
 // 스프레드시트 데이터 파싱
 async function loadData() {
   try {
-    const res = await fetch(SHEET_URL);
-    const text = await res.text();
-    const json = JSON.parse(text.slice(47, -2));
-    const rows = json.table.rows;
+    const res = await fetch(SCRIPT_URL + '?q=');
+    const json = await res.json();
+    const rows = json.items || [];
 
     allData = [];
-    const kwNormMap = {}; // normalized -> original
+    const kwNormMap = {};
 
-    rows.forEach(row => {
-      if (!row.c || !row.c[4]?.v) return;
-      const date = row.c[0]?.v || '';
-      const channel = row.c[1]?.v || '';
-      const thumb = row.c[2]?.v || '';
-      const title = row.c[4]?.v || '';
-      const link = row.c[5]?.v || '';
-      const tags = [
-        row.c[6]?.v, row.c[7]?.v, row.c[8]?.v,
-        row.c[9]?.v, row.c[10]?.v, row.c[14]?.v
-      ].filter(Boolean).map(t => String(t).trim())
+    rows.forEach(item => {
+      if (!item.title) return;
+      const date = item.date || '';
+      const channel = item.channel || '';
+      const thumb = item.thumbnail || '';
+      const title = item.title || '';
+      const link = item.link || '';
+      const tags = (item.tags || [])
        .filter(t => t && t.length > 1 && !t.startsWith('yt:'));
 
       const video = { date, channel, thumb, title, link, tags };
