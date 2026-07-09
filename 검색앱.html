@@ -8,14 +8,17 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: #0f0f0f; color: #e5e5e5; font-family: -apple-system, sans-serif; min-height: 100vh; }
 
-  .topbar { background: #1a1a1a; padding: 14px 20px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 10; border-bottom: 1px solid #2a2a2a; }
+  .topbar { background: #1a1a1a; padding: 14px 20px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 10; border-bottom: 1px solid #2a2a2a; flex-wrap: wrap; }
   .logo { font-size: 15px; font-weight: 600; color: #fff; white-space: nowrap; }
-  .search-wrap { flex: 1; position: relative; }
+  .search-wrap { flex: 1; min-width: 200px; position: relative; }
   .search-wrap input { width: 100%; background: #2a2a2a; border: 1px solid #3a3a3a; border-radius: 24px; padding: 9px 18px 9px 40px; font-size: 15px; color: #fff; outline: none; transition: border-color 0.2s; }
   .search-wrap input:focus { border-color: #7F77DD; }
   .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #888; font-size: 15px; pointer-events: none; }
+  .topbar-btns { display: flex; gap: 8px; }
   .refresh-btn { background: #7F77DD; color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 13px; cursor: pointer; white-space: nowrap; }
   .refresh-btn:hover { background: #6a62c4; }
+  .dict-btn { background: #5b6af0; color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 13px; cursor: pointer; white-space: nowrap; }
+  .dict-btn:hover { background: #4a59d0; }
 
   .count-bar { padding: 12px 20px 4px; font-size: 13px; color: #888; }
   .count-bar span { color: #9b8ff0; font-weight: 600; }
@@ -23,7 +26,11 @@
   .filter-bar { padding: 6px 20px 10px; display: flex; gap: 8px; flex-wrap: wrap; }
   .filter-chip { background: #2a2a2a; border: 1px solid #3a3a3a; border-radius: 16px; padding: 4px 12px; font-size: 12px; color: #aaa; cursor: pointer; transition: all 0.15s; }
   .filter-chip.active { background: #7F77DD; border-color: #7F77DD; color: #fff; }
-  .monetize-chip.active { background: #7F77DD; border-color: #7F77DD; color: #fff; }
+  .filter-chip.cat-심리상담.active { background: #e879a0; border-color: #e879a0; }
+  .filter-chip.cat-교육.active { background: #22c55e; border-color: #22c55e; }
+  .filter-chip.cat-AI.active { background: #3b82f6; border-color: #3b82f6; }
+  .filter-chip.cat-수익화.active { background: #f59e0b; border-color: #f59e0b; }
+  .filter-chip.cat-기타.active { background: #6b7280; border-color: #6b7280; }
 
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; padding: 0 20px 30px; }
 
@@ -39,9 +46,13 @@
   .card-title { font-size: 13px; font-weight: 500; color: #e5e5e5; line-height: 1.45; margin-bottom: 8px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .tags { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 6px; }
   .tag { background: #2a2a2a; color: #888; font-size: 10px; padding: 2px 7px; border-radius: 10px; }
-  .badge-monetize { display: inline-block; background: #7F77DD22; color: #9b8ff0; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 12px; }
   .card-bottom { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-  .card-type { font-size: 11px; color: #555; }
+  .badge-category { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 12px; }
+  .badge-심리상담 { background: #e879a022; color: #e879a0; }
+  .badge-교육 { background: #22c55e22; color: #22c55e; }
+  .badge-AI { background: #3b82f622; color: #3b82f6; }
+  .badge-수익화 { background: #f59e0b22; color: #f59e0b; }
+  .badge-기타 { background: #6b728022; color: #6b7280; }
 
   .empty { text-align: center; padding: 60px 20px; color: #555; font-size: 15px; }
   .loading { text-align: center; padding: 60px 20px; color: #666; font-size: 14px; }
@@ -60,8 +71,11 @@
     <span class="search-icon">🔍</span>
     <input type="text" id="searchInput" placeholder="키워드, 채널명, 태그 입력..." />
   </div>
-<button class="refresh-btn" onclick="loadData()">↺ 새로고침</button>
-<button class="refresh-btn" onclick="location.href='색인.html'" style="background:#5b6af0;">📚 컨텐츠 사전</button></div>
+  <div class="topbar-btns">
+    <button class="refresh-btn" onclick="loadData()">↺ 새로고침</button>
+    <button class="dict-btn" onclick="location.href='색인.html'">📚 컨텐츠 사전</button>
+  </div>
+</div>
 
 <div class="count-bar" id="countBar">데이터 불러오는 중...</div>
 <div class="filter-bar" id="filterBar"></div>
@@ -73,8 +87,69 @@
 const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzPTep6HulziD6qrgCkFpNk1Vy6XzeWyZE1-B2aLQO8tmDo-4Bt2VYXRuMddCTNc2fc/exec';
 
 let allData = [];
-let activeType = '';
+let activeCategory = '';
 let activeMonetize = false;
+
+// 자동 분류 키워드 기준
+const CATEGORY_KEYWORDS = {
+  '심리상담': [
+    '심리', '상담', '뇌과학', '뇌가학', '심리학', '정서', '감정', '번아웃',
+    '우울', '인간관계', '인간관개', '인간관게', '트라우마', '가스라이팅',
+    '손절', '자존감', '맨탈', '멘탈', '스트레스', '불안', '공황',
+    '심니학', '뇌가학', '정신건강', 'ADHD', 'adhd', '심리치료',
+    '상담사', '상담교사', '정신', '심리상담', '놀면서배우는심리학',
+    '속는셈치고', '인간2.0', '오늘은심리학', '심리학고양이', '뉴마인드'
+  ],
+  '교육': [
+    '교육', '학습', '진로', '강의', '공부', '선생님', '학교', '교사',
+    '학생', '수업', '교육정책', '입시', '진학', '교수법', '학원',
+    '교집합', '조현정', '자기개발', '동기부여', '독서', '북튜브'
+  ],
+  'AI': [
+    'AI', '인공지능', '클로드', 'Claude', 'claude', 'GPT', 'gpt',
+    '챗GPT', 'chatgpt', '제미나이', 'Gemini', 'gemini', '시댄스',
+    'Seedance', 'seedance', '힉스필드', 'Higgsfield', 'higgsfield',
+    '옵시디언', 'Obsidian', 'obsidian', '클로드코드', 'ClaudeCode',
+    '자동화', '에이전트', '프롬프트', 'prompt', '코덱스', 'Codex',
+    '페이블', 'Fable', '오퍼스', 'Opus', '미드저니', 'Midjourney',
+    '수노', 'Suno', 'suno', '클링', 'Kling', '구글Flow', 'GoogleFlow',
+    'NotebookLM', '노트북LM', '바이브코딩', 'MCP', 'mcp',
+    '딥리서치', 'AI영상', 'AI이미지', 'AI음악', 'AI에이전트',
+    'LLM', 'llm', 'RAG', 'rag', '코파일럿', 'Copilot',
+    '나노바나나', 'Nanobanana', 'ComfyUI', '힉스필드', 'Higgsfield',
+    '매그니픽', 'Magnific', '그록', 'Grok', 'grok'
+  ],
+  '수익화': [
+    '수익', '부업', '돈', '재테크', '창업', '1인기업', '1인 기업',
+    '마케팅', '판매', '투자', '경제', '사업', '수익화', '광고',
+    '유튜브채널', '블로그', '티스토리', '인플루언서', '콘텐츠마케팅',
+    '온라인판매', '스마트스토어', '쿠팡', '부수입', '파이프라인',
+    '월수익', '수익모델', '돈버는법', '재테크', '주식', '코인',
+    '세금', '절세', '비즈니스', 'business', '사이드잡'
+  ]
+};
+
+// 자동 분류 함수
+function classifyContent(item) {
+  // 이미 분류된 경우 우선 사용
+  if (item.type && item.type !== '') return item.type;
+
+  const text = [
+    item.title || '',
+    item.channel || '',
+    ...(item.tags || [])
+  ].join(' ').toLowerCase();
+
+  // 순서대로 체크 (심리상담 > 교육 > AI > 수익화 > 기타)
+  for (const [category, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
+    for (const kw of keywords) {
+      if (text.includes(kw.toLowerCase())) {
+        return category;
+      }
+    }
+  }
+  return '기타';
+}
 
 async function loadData() {
   document.getElementById('grid').innerHTML = '<div class="loading">⏳ 데이터 불러오는 중...</div>';
@@ -82,39 +157,34 @@ async function loadData() {
   try {
     const res = await fetch(SCRIPT_URL + '?q=');
     const json = await res.json();
-    allData = json.items || [];
+    allData = (json.items || []).map(item => ({
+      ...item,
+      category: classifyContent(item)
+    }));
     buildFilters();
     renderCards(allData);
   } catch(e) {
-    document.getElementById('grid').innerHTML = '<div class="empty">❌ 데이터를 불러오지 못했습니다.<br>SCRIPT_URL을 확인해 주세요.</div>';
+    document.getElementById('grid').innerHTML = '<div class="empty">❌ 데이터를 불러오지 못했습니다.<br>잠시 후 다시 시도해주세요.</div>';
   }
 }
 
 function buildFilters() {
-  const types = [...new Set(allData.map(d => d.type).filter(Boolean))];
+  const categories = ['심리상담', '교육', 'AI', '수익화', '기타'];
   const bar = document.getElementById('filterBar');
-  bar.innerHTML = `
-    <span class="filter-chip active" onclick="setType('', this)">전체</span>
-    <span class="filter-chip monetize-chip" onclick="setMonetize(this)">#수익화</span>
-  `;
-  types.forEach(t => {
-    bar.innerHTML += `<span class="filter-chip" onclick="setType('${t}', this)">${t}</span>`;
+
+  // 카테고리별 카운트
+  const counts = {};
+  categories.forEach(c => counts[c] = 0);
+  allData.forEach(d => { if (counts[d.category] !== undefined) counts[d.category]++; });
+
+  bar.innerHTML = `<span class="filter-chip active" onclick="setCategory('', this)">전체 (${allData.length})</span>`;
+  categories.forEach(cat => {
+    bar.innerHTML += `<span class="filter-chip cat-${cat}" onclick="setCategory('${cat}', this)">${cat} (${counts[cat]})</span>`;
   });
 }
 
-function setMonetize(el) {
-  activeMonetize = !activeMonetize;
-  el.classList.toggle('active', activeMonetize);
-  if (activeMonetize) {
-    activeType = '';
-    document.querySelectorAll('.filter-chip:not(.monetize-chip)').forEach(c => c.classList.remove('active'));
-  }
-  applyFilter();
-}
-
-function setType(type, el) {
-  activeType = type;
-  activeMonetize = false;
+function setCategory(cat, el) {
+  activeCategory = cat;
   document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
   applyFilter();
@@ -123,8 +193,7 @@ function setType(type, el) {
 function applyFilter() {
   const q = document.getElementById('searchInput').value.toLowerCase().trim();
   let filtered = allData;
-  if (activeMonetize) filtered = filtered.filter(d => d.monetize);
-  if (activeType) filtered = filtered.filter(d => d.type === activeType);
+  if (activeCategory) filtered = filtered.filter(d => d.category === activeCategory);
   if (q) {
     filtered = filtered.filter(d =>
       [d.title, d.channel, d.keyword, d.type, d.summary, ...(d.tags || [])]
@@ -149,8 +218,8 @@ function renderCards(items) {
       ? `<img src="${item.thumbnail}" onerror="this.parentNode.innerHTML='<div class=thumb-fallback>▶</div>'" loading="lazy" />`
       : '<div class="thumb-fallback">▶</div>';
     const tags = (item.tags || []).slice(0, 3).map(t => `<span class="tag">#${t}</span>`).join('');
-    const monetize = item.monetize ? `<span class="badge-monetize">#수익화</span>` : '';
     const dateStr = item.date ? String(item.date).substring(0, 10) : '';
+    const cat = item.category || '기타';
 
     return `
       <div class="card" onclick="window.open('${item.link}', '_blank')">
@@ -163,8 +232,7 @@ function renderCards(items) {
           <div class="card-title">${item.title || '제목 없음'}</div>
           <div class="tags">${tags}</div>
           <div class="card-bottom">
-            <span class="card-type">${item.type || ''}</span>
-            ${monetize}
+            <span class="badge-category badge-${cat}">${cat}</span>
           </div>
         </div>
       </div>`;
