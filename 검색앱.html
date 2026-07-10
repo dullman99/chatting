@@ -27,6 +27,7 @@
   .filter-chip.cat-교육.active { background: #22c55e; border-color: #22c55e; }
   .filter-chip.cat-AI.active { background: #3b82f6; border-color: #3b82f6; }
   .filter-chip.cat-기타.active { background: #6b7280; border-color: #6b7280; }
+  .filter-chip.cat-수익화.active { background: #f59e0b; border-color: #f59e0b; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; padding: 0 20px 30px; }
   .card { background: #1e1e1e; border-radius: 10px; border: 1px solid #2a2a2a; overflow: hidden; cursor: pointer; transition: transform 0.15s, border-color 0.15s; }
   .card:hover { transform: translateY(-2px); border-color: #7F77DD; }
@@ -46,6 +47,7 @@
   .badge-교육 { background: #22c55e22; color: #22c55e; }
   .badge-AI { background: #3b82f622; color: #3b82f6; }
   .badge-기타 { background: #6b728022; color: #6b7280; }
+  .badge-수익화 { display: inline-block; background: #f59e0b22; color: #f59e0b; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 12px; }
   .empty { text-align: center; padding: 60px 20px; color: #555; font-size: 15px; }
   .loading { text-align: center; padding: 60px 20px; color: #666; font-size: 14px; }
   @media (max-width: 600px) {
@@ -79,6 +81,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzPTep6HulziD6qrgCkF
 
 let allData = [];
 let activeCategory = '';
+let activeMonetize = false;
 
 // ✅ 박 선생님이 직접 분류한 채널 목록
 const CHANNEL_CATEGORY = {
@@ -131,6 +134,64 @@ const CHANNEL_CATEGORY = {
   ],
 };
 
+// ✅ 박 선생님이 AI로 분류한 추가 채널
+const AI_CHANNELS = [
+  // 박 선생님 직접 지정
+  '인프제', '인프제 INFJ', 'INFJ',
+  '차세이', '차세이CHASEYi', 'CHASEYi',
+  '영상독학',
+  '윤자동',
+  '오목교 전자상가', '오목교전자상가',
+  '닥또리',
+  'AI놀이터',
+  '컴테크',
+  '혼잡스',
+  'KEVIN 케빈', 'KEVIN 케빈 - IT리뷰', '케빈',
+  '조현정의AI실험실', '조현정의 AI실험실',
+  '왼손', '왼손 WENSON AI', 'WENSON AI',
+  '슈퍼휴먼X', '슈퍼휴먼',
+  '레벨업클라쓰', 'Levelupclass', '레벨업클라쓰 Levelupclass',
+  '알면좋을AI공학', 'AIEDU', '알면좋을AI공학 AIEDU',
+  '오은환의 하이라이트', '오은환',
+  'PR미디어',
+  '오빠두엑셀', '오빠두',
+  '씨지봉', '씨지봉 | 3D 그래픽 멘토',
+  '돈디 AI', '돈디AI', '돈디',
+  '배움의 달인', '배움의 달인 (AI·자동화)',
+  '비지오랩',
+  '티타임즈TV', '티타임즈',
+  '페이퍼로지',
+  // 기존에 있던 AI 채널
+  'AI 아스트라', 'AI Astra',
+  '개발동생', '감자나라ai',
+  '제이의 AI 도서관', '시민개발자 구씨',
+  '에이젠 AI', '홍아린 AI', '성공지식백과',
+  '오후다섯씨', 'AI 치트키',
+  'AI 겸임교수 이종범', '김효율의 AI 개발단',
+  '이동훈의 루트AI', '디자인하는AI',
+  '조피디 연구소', '씨지정', 'cocojuan코코쥬안',
+  '수스랩', '편집하는여자', '태오의 실행 비즈니스',
+  '잭PD의 바이브코딩 아카데미', 'AI Freemium',
+  'Jay Choi', '얄팍한 코딩사전',
+  'CGN AI Innovation Team', '칼퇴연구소',
+  '실전압축 AI머니랩', '그랜트',
+  '소소한 AI 입문노트', '안될공학', '디렉손',
+  '오픈레이어', '브랜드마이트',
+  '엔드플랜', 'Play with AI Lab',
+  'NeoLuddite', 'Sprouts 씨앗',
+  '썹pd의 영상강좌', '힉스필드', 'Higgsfield AI',
+  'AI 아스트라 AI Astra',
+  '나노바나나', 'Nanobanana',
+  '알파GOGOGO', '그린코끼리 AI',
+  '감자나라 ai', 'EO Korea',
+  '잭PD', '이클립스AI', 'AInspire',
+  'GAYUN AI', '이재환의 루트AI', '곰인간',
+  '하이라이트', 'Hayley AI',
+  '썹PD', 'CreativeTV',
+  '시지봉', 'LYM', 'cowork ai',
+  '쓸때쓰는AI', 'AI맛집',
+];
+
 // ✅ AI 키워드 (제목+태그 기반)
 const AI_KEYWORDS = [
   'claude', 'chatgpt', 'gemini', 'seedance', 'higgsfield',
@@ -143,6 +204,18 @@ const AI_KEYWORDS = [
   'ai영상', 'ai이미지', 'ai음악', '딥리서치',
   '프롬프트', '에이전트', '코덱스', '페이블',
   '생성형', '거대언어모델', 'gpt', 'ai도구', 'ai툴',
+];
+
+// ✅ 수익화 키워드 (AI 영상에 추가 배지)
+const MONETIZE_KEYWORDS = [
+  '수익화', '수익창출', '부업', '재테크', '투잡', '사이드잡',
+  '돈버는', '돈벌기', '월수입', '월급탈출', '경제적자유',
+  '블로그수익', '유튜브수익', '쇼츠수익', '애드센스',
+  '광고수익', '파이프라인', '자동수익', '불로소득',
+  '1인창업', '무자본창업', '프리랜서수익',
+  'ai부업', 'ai수익', '수익형', '돈되는',
+  '퇴근후부업', '직장인부업', '재택부업',
+  '스마트스토어', '쿠팡파트너스', '온라인판매',
 ];
 
 // ✅ 심리상담 키워드 (채널 미분류 시 보조)
@@ -159,6 +232,11 @@ const EDU_KEYWORDS = [
   '진로교육', '교사연수', '독서', '인문학', '철학강의',
 ];
 
+function isMonetize(item) {
+  const text = ((item.title || '') + ' ' + (item.tags || []).join(' ')).toLowerCase();
+  return MONETIZE_KEYWORDS.some(kw => text.includes(kw.toLowerCase()));
+}
+
 function classifyContent(item) {
   const channel = (item.channel || '').trim();
   const title = (item.title || '').toLowerCase();
@@ -171,6 +249,13 @@ function classifyContent(item) {
       if (channel === ch || channel.includes(ch) || ch.includes(channel)) {
         return cat;
       }
+    }
+  }
+
+  // 1.5단계: AI 채널명 직접 지정
+  for (const ch of AI_CHANNELS) {
+    if (channel === ch || channel.includes(ch) || ch.includes(channel)) {
+      return 'AI';
     }
   }
 
@@ -201,7 +286,8 @@ async function loadData() {
     const json = await res.json();
     allData = (json.items || []).map(item => ({
       ...item,
-      category: classifyContent(item)
+      category: classifyContent(item),
+      monetize: isMonetize(item)
     }));
     buildFilters();
     renderCards(allData);
@@ -223,7 +309,17 @@ function buildFilters() {
   });
 }
 
+function setMonetize(el) {
+  activeMonetize = !activeMonetize;
+  activeCategory = '';
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  if (activeMonetize) el.classList.add('active');
+  else document.querySelector('.filter-chip').classList.add('active');
+  applyFilter();
+}
+
 function setCategory(cat, el) {
+  activeMonetize = false;
   activeCategory = cat;
   document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
@@ -233,6 +329,7 @@ function setCategory(cat, el) {
 function applyFilter() {
   const q = document.getElementById('searchInput').value.toLowerCase().trim();
   let filtered = allData;
+  if (activeMonetize) filtered = filtered.filter(d => d.monetize);
   if (activeCategory) filtered = filtered.filter(d => d.category === activeCategory);
   if (q) {
     filtered = filtered.filter(d =>
@@ -273,6 +370,7 @@ function renderCards(items) {
           <div class="tags">${tags}</div>
           <div class="card-bottom">
             <span class="badge-category badge-${cat}">${cat}</span>
+            ${item.monetize ? '<span class="badge-수익화">💰 수익화</span>' : ''}
           </div>
         </div>
       </div>`;
