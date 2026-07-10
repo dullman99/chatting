@@ -7,7 +7,6 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { background: #0f0f0f; color: #e5e5e5; font-family: -apple-system, sans-serif; min-height: 100vh; }
-
   .topbar { background: #1a1a1a; padding: 14px 20px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 10; border-bottom: 1px solid #2a2a2a; flex-wrap: wrap; }
   .logo { font-size: 15px; font-weight: 600; color: #fff; white-space: nowrap; }
   .search-wrap { flex: 1; min-width: 200px; position: relative; }
@@ -19,21 +18,16 @@
   .refresh-btn:hover { background: #6a62c4; }
   .dict-btn { background: #5b6af0; color: #fff; border: none; border-radius: 8px; padding: 8px 14px; font-size: 13px; cursor: pointer; white-space: nowrap; }
   .dict-btn:hover { background: #4a59d0; }
-
   .count-bar { padding: 12px 20px 4px; font-size: 13px; color: #888; }
   .count-bar span { color: #9b8ff0; font-weight: 600; }
-
   .filter-bar { padding: 6px 20px 10px; display: flex; gap: 8px; flex-wrap: wrap; }
   .filter-chip { background: #2a2a2a; border: 1px solid #3a3a3a; border-radius: 16px; padding: 4px 12px; font-size: 12px; color: #aaa; cursor: pointer; transition: all 0.15s; }
   .filter-chip.active { background: #7F77DD; border-color: #7F77DD; color: #fff; }
   .filter-chip.cat-심리상담.active { background: #e879a0; border-color: #e879a0; }
   .filter-chip.cat-교육.active { background: #22c55e; border-color: #22c55e; }
   .filter-chip.cat-AI.active { background: #3b82f6; border-color: #3b82f6; }
-  .filter-chip.cat-수익화.active { background: #f59e0b; border-color: #f59e0b; }
   .filter-chip.cat-기타.active { background: #6b7280; border-color: #6b7280; }
-
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; padding: 0 20px 30px; }
-
   .card { background: #1e1e1e; border-radius: 10px; border: 1px solid #2a2a2a; overflow: hidden; cursor: pointer; transition: transform 0.15s, border-color 0.15s; }
   .card:hover { transform: translateY(-2px); border-color: #7F77DD; }
   .thumb { width: 100%; aspect-ratio: 16/9; background: #2a2a2a; overflow: hidden; }
@@ -51,12 +45,9 @@
   .badge-심리상담 { background: #e879a022; color: #e879a0; }
   .badge-교육 { background: #22c55e22; color: #22c55e; }
   .badge-AI { background: #3b82f622; color: #3b82f6; }
-  .badge-수익화 { background: #f59e0b22; color: #f59e0b; }
   .badge-기타 { background: #6b728022; color: #6b7280; }
-
   .empty { text-align: center; padding: 60px 20px; color: #555; font-size: 15px; }
   .loading { text-align: center; padding: 60px 20px; color: #666; font-size: 14px; }
-
   @media (max-width: 600px) {
     .grid { grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 12px 20px; }
     .card-title { font-size: 12px; }
@@ -88,65 +79,117 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzPTep6HulziD6qrgCkF
 
 let allData = [];
 let activeCategory = '';
-let activeMonetize = false;
 
-// 자동 분류 키워드 기준
-const CATEGORY_KEYWORDS = {
+// ✅ 박 선생님이 직접 분류한 채널 목록
+const CHANNEL_CATEGORY = {
   '심리상담': [
-    '심리', '상담', '뇌과학', '뇌가학', '심리학', '정서', '감정', '번아웃',
-    '우울', '인간관계', '인간관개', '인간관게', '트라우마', '가스라이팅',
-    '손절', '자존감', '맨탈', '멘탈', '스트레스', '불안', '공황',
-    '심니학', '뇌가학', '정신건강', 'ADHD', 'adhd', '심리치료',
-    '상담사', '상담교사', '정신', '심리상담', '놀면서배우는심리학',
-    '속는셈치고', '인간2.0', '오늘은심리학', '심리학고양이', '뉴마인드'
+    '인간2.0연구소',
+    '장동선의 궁금한 뇌', '장동선의궁금한뇌',
+    '오늘은 심리학', '오늘은심리학',
+    '블루도트',
+    '놀면서 배우는 심리학', '놀면서배우는심리학',
+    '속는셈치고 심리수업', '속는셈치고심리수업',
+    '뉴마인드', '뉴마인드 (심리 뇌과학)',
+    '심리학 고양이', '심리학고양이',
+    '너진똑', '너진똑 NJT BOOK',
+    'EBS 지식', 'EBS지식',
+    'EBS 컬렉션 - 사이언스', 'EBS컬렉션',
+    'EBS 지식채널e', 'EBS지식채널e',
+    '효린파파',
+    '심리상담의 모든것 상담내비게이션 TV', '상담내비게이션',
+    '이클립스',
+    '그리는 심리학', '그리는심리학',
+    '지혜의 빛', '지혜의 빛 : 인문학의 숲',
+    '세계경제 가이드북', '세계경제가이드북',
+    '알아봤음',
+    '심리 치트키', '심리치트키',
+    '레디포그로스', 'Ready For Growth',
+    '디글', '디글 :Diggle', 'Diggle',
+    '동기부여학과',
+    '이상욱의 진료실 밖 처방전',
+    '세바시 강연', '세바시', 'Sebasi Talk',
+    '최재천의 아마존',
+    '유성호의 데맨톡', 'Deadmantalk',
+    '심리북튜버 쏭아지네',
+    '5분 뚝딱 철학',
+    '쉬운심리',
+    '심리학 설명서', '심리학설명서',
+    '사피랜드', 'SAPILAND',
+    '흑백심리학',
   ],
   '교육': [
-    '교육', '학습', '진로', '강의', '공부', '선생님', '학교', '교사',
-    '학생', '수업', '교육정책', '입시', '진학', '교수법', '학원',
-    '교집합', '조현정', '자기개발', '동기부여', '독서', '북튜브'
+    '교집합 스튜디오', '교집합스튜디오',
+    '인류의서재',
+    '보다', '보다 BODA', 'BODA',
+    '지식인사이드',
+    'Sprouts 한국', 'Sprouts',
+    '휴먼예능',
+    '김교수의 세 가지', '김교수의세가지',
+    'EBS', 'EBS 다큐', 'EBSDocumentary',
+    'EBSCulture', 'EBS Culture',
+    '책과삶',
   ],
-  'AI': [
-    'AI', '인공지능', '클로드', 'Claude', 'claude', 'GPT', 'gpt',
-    '챗GPT', 'chatgpt', '제미나이', 'Gemini', 'gemini', '시댄스',
-    'Seedance', 'seedance', '힉스필드', 'Higgsfield', 'higgsfield',
-    '옵시디언', 'Obsidian', 'obsidian', '클로드코드', 'ClaudeCode',
-    '자동화', '에이전트', '프롬프트', 'prompt', '코덱스', 'Codex',
-    '페이블', 'Fable', '오퍼스', 'Opus', '미드저니', 'Midjourney',
-    '수노', 'Suno', 'suno', '클링', 'Kling', '구글Flow', 'GoogleFlow',
-    'NotebookLM', '노트북LM', '바이브코딩', 'MCP', 'mcp',
-    '딥리서치', 'AI영상', 'AI이미지', 'AI음악', 'AI에이전트',
-    'LLM', 'llm', 'RAG', 'rag', '코파일럿', 'Copilot',
-    '나노바나나', 'Nanobanana', 'ComfyUI', '힉스필드', 'Higgsfield',
-    '매그니픽', 'Magnific', '그록', 'Grok', 'grok'
-  ],
-  '수익화': [
-    '수익', '부업', '돈', '재테크', '창업', '1인기업', '1인 기업',
-    '마케팅', '판매', '투자', '경제', '사업', '수익화', '광고',
-    '유튜브채널', '블로그', '티스토리', '인플루언서', '콘텐츠마케팅',
-    '온라인판매', '스마트스토어', '쿠팡', '부수입', '파이프라인',
-    '월수익', '수익모델', '돈버는법', '재테크', '주식', '코인',
-    '세금', '절세', '비즈니스', 'business', '사이드잡'
-  ]
 };
 
-// 자동 분류 함수
+// ✅ AI 키워드 (제목+태그 기반)
+const AI_KEYWORDS = [
+  'claude', 'chatgpt', 'gemini', 'seedance', 'higgsfield',
+  'obsidian', 'notebooklm', 'midjourney', 'suno', 'kling',
+  'comfyui', 'magnific', 'grok', 'codex', 'fable',
+  'mcp', 'llm', 'openai', 'anthropic',
+  '클로드', '챗gpt', '제미나이', '시댄스', '힉스필드',
+  '옵시디언', '노트북lm', '미드저니', '수노', '클링',
+  '바이브코딩', '클로드코드', '인공지능', '자동화',
+  'ai영상', 'ai이미지', 'ai음악', '딥리서치',
+  '프롬프트', '에이전트', '코덱스', '페이블',
+  '생성형', '거대언어모델', 'gpt', 'ai도구', 'ai툴',
+];
+
+// ✅ 심리상담 키워드 (채널 미분류 시 보조)
+const PSYCH_KEYWORDS = [
+  '심리학', '뇌과학', '상담사', '심리치료', '정신건강',
+  '번아웃', '우울', '공황', 'adhd', '가스라이팅',
+  '트라우마', '애착', '자존감', '인간관계', '손절',
+  '정서', '감정조절', '심리', '뇌가학', '심니학',
+];
+
+// ✅ 교육 키워드 (채널 미분류 시 보조)
+const EDU_KEYWORDS = [
+  '교육정책', '교수법', '입시', '학습법', '공부법',
+  '진로교육', '교사연수', '독서', '인문학', '철학강의',
+];
+
 function classifyContent(item) {
-  // 이미 분류된 경우 우선 사용
+  const channel = (item.channel || '').trim();
+  const title = (item.title || '').toLowerCase();
+  const tags = (item.tags || []).join(' ').toLowerCase();
+  const text = title + ' ' + tags;
 
-  const text = [
-    item.title || '',
-    item.channel || '',
-    ...(item.tags || [])
-  ].join(' ').toLowerCase();
-
-  // 순서대로 체크 (심리상담 > 교육 > AI > 수익화 > 기타)
-  for (const [category, keywords] of Object.entries(CATEGORY_KEYWORDS)) {
-    for (const kw of keywords) {
-      if (text.includes(kw.toLowerCase())) {
-        return category;
+  // 1단계: 채널명 기반 (최우선)
+  for (const [cat, channels] of Object.entries(CHANNEL_CATEGORY)) {
+    for (const ch of channels) {
+      if (channel === ch || channel.includes(ch) || ch.includes(channel)) {
+        return cat;
       }
     }
   }
+
+  // 2단계: 심리상담 키워드
+  for (const kw of PSYCH_KEYWORDS) {
+    if (text.includes(kw.toLowerCase())) return '심리상담';
+  }
+
+  // 3단계: 교육 키워드
+  for (const kw of EDU_KEYWORDS) {
+    if (text.includes(kw.toLowerCase())) return '교육';
+  }
+
+  // 4단계: AI 키워드
+  for (const kw of AI_KEYWORDS) {
+    if (text.includes(kw.toLowerCase())) return 'AI';
+  }
+
+  // 5단계: 기타
   return '기타';
 }
 
@@ -168,10 +211,8 @@ async function loadData() {
 }
 
 function buildFilters() {
-  const categories = ['심리상담', '교육', 'AI', '수익화', '기타'];
+  const categories = ['심리상담', '교육', 'AI', '기타'];
   const bar = document.getElementById('filterBar');
-
-  // 카테고리별 카운트
   const counts = {};
   categories.forEach(c => counts[c] = 0);
   allData.forEach(d => { if (counts[d.category] !== undefined) counts[d.category]++; });
@@ -195,7 +236,7 @@ function applyFilter() {
   if (activeCategory) filtered = filtered.filter(d => d.category === activeCategory);
   if (q) {
     filtered = filtered.filter(d =>
-      [d.title, d.channel, d.keyword, d.type, d.summary, ...(d.tags || [])]
+      [d.title, d.channel, d.keyword, d.summary, ...(d.tags || [])]
         .join(' ').toLowerCase().includes(q)
     );
   }
