@@ -132,7 +132,6 @@ const CATEGORY_KEYWORDS = {
 // 자동 분류 함수
 function classifyContent(item) {
   // 이미 분류된 경우 우선 사용
-  if (item.type && item.type !== '') return item.type;
 
   const text = [
     item.title || '',
