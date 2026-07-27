@@ -27,6 +27,8 @@
   .filter-chip.cat-교육.active { background: #22c55e; border-color: #22c55e; }
   .filter-chip.cat-AI.active { background: #3b82f6; border-color: #3b82f6; }
   .filter-chip.cat-기타.active { background: #6b7280; border-color: #6b7280; }
+  .filter-chip.cat-수익화.active { background: #f59e0b; border-color: #f59e0b; color: #fff; }
+  .filter-chip.cat-수익화관련.active { background: #b08434; border-color: #b08434; color: #fff; }
   .filter-chip.cat-수익화.active { background: #f59e0b; border-color: #f59e0b; }
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; padding: 0 20px 30px; }
   .card { background: #1e1e1e; border-radius: 10px; border: 1px solid #2a2a2a; overflow: hidden; cursor: pointer; transition: transform 0.15s, border-color 0.15s; }
@@ -48,6 +50,7 @@
   .badge-AI { background: #3b82f622; color: #3b82f6; }
   .badge-기타 { background: #6b728022; color: #6b7280; }
   .badge-수익화 { display: inline-block; background: #f59e0b22; color: #f59e0b; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 12px; }
+  .badge-수익화관련 { display: inline-block; background: #f59e0b0f; color: #b08434; font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 12px; border: 1px dashed #f59e0b55; }
   .empty { text-align: center; padding: 60px 20px; color: #555; font-size: 15px; }
   .loading { text-align: center; padding: 60px 20px; color: #666; font-size: 14px; }
   @media (max-width: 600px) {
@@ -81,7 +84,7 @@ const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzPTep6HulziD6qrgCkF
 
 let allData = [];
 let activeCategory = '';
-let activeMonetize = false;
+let activeMonetize = '';  // '' | 'A' | 'AB'
 
 // ✅ 박 선생님이 직접 분류한 채널 목록
 const CHANNEL_CATEGORY = {
@@ -260,43 +263,47 @@ const AI_KEYWORDS = [
   '생성형', '거대언어모델', 'gpt', 'ai도구', 'ai툴',
 ];
 
-// ✅ 수익화 키워드 (AI 영상에 추가 배지)
-const MONETIZE_KEYWORDS = [
-  // 핵심 어근 — 이 단어가 포함되면 무조건 매칭
-  '수익', '부업', '투잡', '재테크', '돈벌', '돈 벌',
+// ✅ 수익화 키워드 — 강(A등급): 돈·수익을 직접 뜻함
+const MONETIZE_STRONG = [
+  '부업', '투잡', '돈벌', '돈 벌',
   '파이프라인', '불로소득', '애드센스', '광고수익',
   '스마트스토어', '쿠팡파트너스', '디지털노마드',
-  '1인창업', '무자본', '프리랜서',
-  '퇴사', '직장탈출', '월급탈출', '경제적자유', '파이어족',
-  '전자책', '강의판매', '클래스101', '크몽',
-  // 돈 관련 어근
+  '무자본', '직장탈출', '월급탈출', '경제적자유', '파이어족',
+  '전자책', '강의판매', '클래스101',
   '돈 되', '돈되', '돈 만드', '돈만드',
   '돈 버', '돈버', '돈을 버', '돈을버',
   '돈 나오', '돈나오', '돈이 되', '돈이되',
   '용돈벌', '용돈 벌',
-  // 수익 관련 어근
   '수익화', '수익 내', '수익내', '수익 올', '수익올',
-  '수익 창출', '수익창출', '수익 만드', '수익만드',
-  // 월 수입 표현
+  '수익 창출', '수익창출', '수익 만드', '수익만드', '수익모델',
   '월수입', '월 수입', '월소득', '월 소득',
   '월100', '월200', '월300', '월500', '월1000',
   '월급 이상', '월급이상', '연봉 탈출', '연봉탈출',
-  // 자동화 수익
   '자동 수익', '자동수익', '자동으로 돈', '자동으로돈',
   '자는 동안', '자는동안', '잠자는 동안', '잠자는동안',
   '24시간 돈', '무인 수익', '무인수익',
-  // AI 수익
   'ai 부업', 'ai부업', 'ai 수익', 'ai수익',
-  'ai로 돈', 'ai로돈', 'ai 투잡', 'ai투잡',
-  'ai로 버', 'ai로버',
-  // 온라인 수익
+  'ai로 돈', 'ai로돈', 'ai 투잡', 'ai투잡', 'ai로 버', 'ai로버',
   '블로그 수익', '블로그수익', '블로그로 돈', '블로그로돈',
   '유튜브 수익', '유튜브수익', '유튜브로 돈', '유튜브로돈',
   '쇼츠 수익', '쇼츠수익', '쇼츠로 돈', '쇼츠로돈',
   '온라인 판매', '온라인판매', '온라인 수익', '온라인수익',
-  // 창업/사업
   '사이드잡', '사이드 잡', '사이드허슬', '사이드 허슬',
-  '억대 수익', '억대수익', '천만원',
+  '억대 수익', '억대수익',
+];
+
+// ✅ 수익화 키워드 — 약: 다른 뜻으로도 흔히 쓰임 → 제목에 있을 때만 인정
+//    (심리상담·교육 카테고리에서는 상담 주제어이므로 무시)
+const MONETIZE_WEAK = [
+  '수익', '퇴사', '재테크', '1인창업', '프리랜서', '크몽', '천만원',
+];
+
+// ✅ 수익화 인접 개념(B등급): 돈 단어는 없지만 사업·판매 맥락
+const MONETIZE_CONCEPT = [
+  '창업', '1인기업', '1인 기업', '비즈니스', '매출', '마케팅', '브랜딩',
+  '외주', '납품', '판매', '팔기', '런칭', '컨설팅', '세일즈', '협찬', '제휴',
+  '쇼핑몰', '상세페이지', '스타트업', 'ai 회사', '회사 만들',
+  '서비스 런칭', '웹사이트 제작', '비즈니스모델', '디지털 상품',
 ];
 
 // ✅ 심리상담 키워드 (채널 미분류 시 보조)
@@ -313,9 +320,22 @@ const EDU_KEYWORDS = [
   '진로교육', '교사연수', '독서', '인문학', '철학강의',
 ];
 
-function isMonetize(item) {
-  const text = ((item.title || '') + ' ' + (item.tags || []).join(' ')).toLowerCase();
-  return MONETIZE_KEYWORDS.some(kw => text.includes(kw.toLowerCase()));
+// 반환값: 'A' = 확실한 수익화, 'B' = 수익화 관련, '' = 해당 없음
+function monetizeLevel(item, category) {
+  const title = (item.title || '').toLowerCase();
+  const text = (title + ' ' + (item.tags || []).join(' ')).toLowerCase();
+
+  // A등급 — 강한 키워드는 제목·태그 어디든
+  if (MONETIZE_STRONG.some(kw => text.includes(kw.toLowerCase()))) return 'A';
+
+  // A등급 — 약한 키워드는 제목에만, 심리상담·교육에서는 주제어이므로 제외
+  if (category !== '심리상담' && category !== '교육'
+      && MONETIZE_WEAK.some(kw => title.includes(kw.toLowerCase()))) return 'A';
+
+  // B등급 — 사업·판매 맥락
+  if (MONETIZE_CONCEPT.some(kw => text.includes(kw.toLowerCase()))) return 'B';
+
+  return '';
 }
 
 function classifyContent(item) {
@@ -365,11 +385,10 @@ async function loadData() {
   try {
     const res = await fetch(SCRIPT_URL + '?q=');
     const json = await res.json();
-    allData = (json.items || []).map(item => ({
-      ...item,
-      category: classifyContent(item),
-      monetize: isMonetize(item)
-    }));
+    allData = (json.items || []).map(item => {
+      const cat = classifyContent(item);
+      return { ...item, category: cat, mLevel: monetizeLevel(item, cat) };
+    });
     buildFilters();
     renderCards(allData);
   } catch(e) {
@@ -388,10 +407,14 @@ function buildFilters() {
   categories.forEach(cat => {
     bar.innerHTML += `<span class="filter-chip cat-${cat}" onclick="setCategory('${cat}', this)">${cat} (${counts[cat]})</span>`;
   });
+  const nA = allData.filter(d => d.mLevel === 'A').length;
+  const nB = allData.filter(d => d.mLevel === 'B').length;
+  bar.innerHTML += `<span class="filter-chip cat-수익화" onclick="setMonetize('A', this)">💰 수익화 (${nA})</span>`;
+  bar.innerHTML += `<span class="filter-chip cat-수익화관련" onclick="setMonetize('AB', this)">💡 관련 포함 (${nA + nB})</span>`;
 }
 
-function setMonetize(el) {
-  activeMonetize = !activeMonetize;
+function setMonetize(mode, el) {
+  activeMonetize = (activeMonetize === mode) ? '' : mode;
   activeCategory = '';
   document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
   if (activeMonetize) el.classList.add('active');
@@ -400,7 +423,7 @@ function setMonetize(el) {
 }
 
 function setCategory(cat, el) {
-  activeMonetize = false;
+  activeMonetize = '';
   activeCategory = cat;
   document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
   el.classList.add('active');
@@ -410,7 +433,8 @@ function setCategory(cat, el) {
 function applyFilter() {
   const q = document.getElementById('searchInput').value.toLowerCase().trim();
   let filtered = allData;
-  if (activeMonetize) filtered = filtered.filter(d => d.monetize);
+  if (activeMonetize === 'A') filtered = filtered.filter(d => d.mLevel === 'A');
+  else if (activeMonetize === 'AB') filtered = filtered.filter(d => d.mLevel);
   if (activeCategory) filtered = filtered.filter(d => d.category === activeCategory);
   if (q) {
     filtered = filtered.filter(d =>
@@ -451,7 +475,8 @@ function renderCards(items) {
           <div class="tags">${tags}</div>
           <div class="card-bottom">
             <span class="badge-category badge-${cat}">${cat}</span>
-            ${item.monetize ? '<span class="badge-수익화">💰 수익화</span>' : ''}
+            ${item.mLevel === 'A' ? '<span class="badge-수익화">💰 수익화</span>' : ''}
+            ${item.mLevel === 'B' ? '<span class="badge-수익화관련">💡 관련</span>' : ''}
           </div>
         </div>
       </div>`;
