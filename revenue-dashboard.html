@@ -4,276 +4,394 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>수익화 분석 대시보드</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --bg: #0F172A; --surface: #1E293B; --surface2: #263548; --border: #334155;
-  --accent: #38BDF8; --accent2: #818CF8; --text: #F1F5F9; --sub: #94A3B8;
-  --green: #10B981; --orange: #F59E0B; --red: #F87171; --purple: #A78BFA;
-  --type1: #F59E0B; --type2: #F87171; --type3: #38BDF8; --type4: #A78BFA; --type5: #94A3B8;
+  --bg: #f0f4f8;
+  --card-bg: #ffffff;
+  --primary: #3b82f6;
+  --accent: #10b981;
+  --warn: #f59e0b;
+  --danger: #ef4444;
+  --text: #1e293b;
+  --muted: #64748b;
+  --border: #e2e8f0;
+  --type1: #dbeafe; --type1-t: #1d4ed8;
+  --type2: #dcfce7; --type2-t: #166534;
+  --type3: #fef9c3; --type3-t: #92400e;
+  --type4: #fce7f3; --type4-t: #9d174d;
+  --type5: #f3e8ff; --type5-t: #6b21a8;
 }
-body { font-family: 'Inter','Noto Sans KR',sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; font-size: 14px; line-height: 1.6; }
-.header { padding: 24px 32px 0; display: flex; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
-.header h1 { font-size: 22px; font-weight: 700; letter-spacing: -0.5px; }
-.header p { font-size: 12px; color: var(--sub); margin-top: 2px; }
-.badge-updated { font-size: 11px; background: var(--surface2); color: var(--sub); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--border); }
-.kpi-bar { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; padding: 20px 32px; }
-.kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 14px; }
-.kpi-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
-.kpi-icon.blue { background: rgba(56,189,248,.15); } .kpi-icon.green { background: rgba(16,185,129,.15); } .kpi-icon.purple { background: rgba(167,139,250,.15); }
-.kpi-num { font-size: 24px; font-weight: 700; line-height: 1; } .kpi-label { font-size: 11px; color: var(--sub); margin-top: 3px; }
-.tabs { display: flex; gap: 4px; padding: 0 32px; border-bottom: 1px solid var(--border); }
-.tab-btn { background: none; border: none; color: var(--sub); padding: 10px 18px; font-size: 13px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; transition: color .2s,border-color .2s; font-family: inherit; }
-.tab-btn:hover { color: var(--text); } .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
-.tab-panel { display: none; padding: 24px 32px 40px; } .tab-panel.active { display: block; }
-.section-label { font-size: 11px; font-weight: 600; letter-spacing: 1px; color: var(--sub); text-transform: uppercase; margin-bottom: 16px; }
-.board-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 14px; }
-.col-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
-.col-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.col-title { font-size: 12px; font-weight: 600; color: var(--text); }
-.col-count { font-size: 11px; color: var(--sub); margin-left: auto; }
-.content-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; position: relative; overflow: hidden; transition: border-color .2s,transform .15s; cursor: default; }
-.content-card::before { content:''; position: absolute; left:0; top:0; bottom:0; width: 3px; }
-.content-card:hover { transform: translateY(-1px); border-color: #4a6080; }
-.card-channel { font-size: 10px; font-weight: 600; color: var(--sub); margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.3px; }
-.card-title { font-size: 11px; color: var(--text); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-.t1::before { background: var(--type1); } .t2::before { background: var(--type2); } .t3::before { background: var(--type3); } .t4::before { background: var(--type4); } .t5::before { background: var(--type5); }
-.dot1 { background: var(--type1); } .dot2 { background: var(--type2); } .dot3 { background: var(--type3); } .dot4 { background: var(--type4); } .dot5 { background: var(--type5); }
-.idea-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; margin-bottom: 8px; position: relative; overflow: hidden; }
-.idea-card::before { content:''; position: absolute; left:0; top:0; bottom:0; width: 3px; }
-.idea-name { font-size: 12px; font-weight: 600; color: var(--text); line-height: 1.4; margin-bottom: 6px; }
-.idea-meta { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-.idea-badge { font-size: 10px; padding: 2px 7px; border-radius: 10px; font-weight: 500; }
-.badge-high { background: rgba(16,185,129,.15); color: var(--green); } .badge-mid { background: rgba(245,158,11,.15); color: var(--orange); } .badge-low { background: rgba(148,163,184,.1); color: var(--sub); }
-.idea-count { font-size: 10px; color: var(--sub); }
-.strategy-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 14px; }
-.strategy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-.strategy-head { padding: 14px 16px 12px; border-bottom: 1px solid var(--border); }
-.strategy-rank { font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 4px; }
-.strategy-name { font-size: 13px; font-weight: 700; color: var(--text); line-height: 1.3; }
-.strategy-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 8px; }
-.strategy-row { display: flex; flex-direction: column; gap: 2px; }
-.strategy-key { font-size: 10px; font-weight: 600; color: var(--sub); text-transform: uppercase; letter-spacing: 0.5px; }
-.strategy-val { font-size: 11px; color: var(--text); line-height: 1.4; }
-.strategy-revenue { margin-top: 4px; padding: 8px 12px; background: var(--surface2); border-radius: 8px; font-size: 12px; font-weight: 600; color: var(--green); text-align: center; }
-@media (max-width: 900px) {
-  .header { padding: 20px 16px 0; } .kpi-bar { padding: 16px; gap: 8px; } .kpi-num { font-size: 20px; }
-  .tabs { padding: 0 16px; overflow-x: auto; } .tab-panel { padding: 16px 16px 32px; }
-  .board-grid, .strategy-grid { grid-template-columns: repeat(2,1fr); }
-}
-@media (max-width: 480px) { .kpi-bar { grid-template-columns: 1fr; } .board-grid, .strategy-grid { grid-template-columns: 1fr; } }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Segoe UI', -apple-system, sans-serif; background: var(--bg); color: var(--text); font-size: 14px; }
+header { background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%); color: white; padding: 20px 24px; display: flex; justify-content: space-between; align-items: center; }
+header h1 { font-size: 20px; font-weight: 700; }
+header .meta { font-size: 12px; opacity: 0.8; text-align: right; }
+.container { max-width: 1200px; margin: 0 auto; padding: 20px 16px; }
+.section-title { font-size: 16px; font-weight: 700; color: var(--text); margin: 24px 0 12px; border-left: 4px solid var(--primary); padding-left: 10px; }
+
+/* KPI */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 8px; }
+.kpi-card { background: var(--card-bg); border-radius: 12px; padding: 16px; box-shadow: 0 1px 4px rgba(0,0,0,0.07); text-align: center; }
+.kpi-card .val { font-size: 32px; font-weight: 800; }
+.kpi-card .label { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.kpi-card.blue .val { color: var(--primary); }
+.kpi-card.green .val { color: var(--accent); }
+.kpi-card.yellow .val { color: var(--warn); }
+.kpi-card.red .val { color: var(--danger); }
+
+/* 수집함 카드 */
+.card-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; }
+.item-card { background: var(--card-bg); border-radius: 10px; padding: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); border-left: 4px solid transparent; }
+.item-card.type1 { border-color: var(--type1-t); }
+.item-card.type2 { border-color: var(--type2-t); }
+.item-card.type4 { border-color: var(--type4-t); }
+.badge { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 600; margin-bottom: 6px; }
+.badge.type1 { background: var(--type1); color: var(--type1-t); }
+.badge.type2 { background: var(--type2); color: var(--type2-t); }
+.badge.type4 { background: var(--type4); color: var(--type4-t); }
+.item-title { font-size: 13px; font-weight: 600; line-height: 1.4; margin-bottom: 6px; }
+.item-meta { font-size: 11px; color: var(--muted); display: flex; justify-content: space-between; }
+.item-link { font-size: 11px; color: var(--primary); text-decoration: none; word-break: break-all; }
+.tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.tag { background: #f1f5f9; color: var(--muted); border-radius: 4px; padding: 1px 6px; font-size: 10px; }
+
+/* 아이디어 테이블 */
+table { width: 100%; border-collapse: collapse; background: var(--card-bg); border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.07); }
+th { background: #f8fafc; padding: 10px 12px; text-align: left; font-size: 12px; color: var(--muted); font-weight: 600; border-bottom: 1px solid var(--border); }
+td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; font-size: 13px; vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+.count-bar { display: flex; align-items: center; gap: 8px; }
+.bar { height: 8px; border-radius: 4px; background: var(--primary); min-width: 4px; }
+.up { color: var(--accent); font-weight: 700; font-size: 11px; }
+
+/* 전략 */
+.strategy-list { display: flex; flex-direction: column; gap: 10px; }
+.strategy-card { background: var(--card-bg); border-radius: 10px; padding: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.06); display: grid; grid-template-columns: 48px 1fr; gap: 12px; align-items: start; }
+.rank-circle { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 800; flex-shrink: 0; }
+.rank-1 { background: #fef3c7; color: #d97706; }
+.rank-2 { background: #e0f2fe; color: #0369a1; }
+.rank-3 { background: #f0fdf4; color: #16a34a; }
+.rank-4 { background: #fce7f3; color: #db2777; }
+.rank-5 { background: #f3e8ff; color: #9333ea; }
+.strategy-name { font-weight: 700; font-size: 14px; margin-bottom: 4px; }
+.strategy-method { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.strategy-income { font-size: 11px; font-weight: 600; color: var(--accent); margin-top: 4px; }
+.strategy-fit { font-size: 11px; color: #64748b; margin-top: 4px; border-top: 1px solid var(--border); padding-top: 6px; }
+footer { text-align: center; padding: 20px; color: var(--muted); font-size: 12px; }
 </style>
 </head>
 <body>
-<div class="header">
+<header>
   <div>
-    <h1>수익화 분석 대시보드</h1>
-    <p>유튜브 수익화 컨텐츠 기반 · Claude 자동 분석</p>
+    <h1>📊 수익화 분석 대시보드</h1>
+    <div style="font-size:13px;opacity:0.85;margin-top:4px;">전문상담교사 AI 부업 주간 분석 리포트</div>
   </div>
-  <!--DATE_BADGE--><span class="badge-updated">마지막 갱신 2026-08-24 · 다음 갱신 2026-09-01</span><!--DATE_BADGE_END-->
-</div>
-
-<!--KPI_START-->
-<div class="kpi-bar">
-  <div class="kpi-card"><div class="kpi-icon blue">📥</div><div><div class="kpi-num" style="color:var(--accent)">65</div><div class="kpi-label">수집된 수익화 컨텐츠</div></div></div>
-  <div class="kpi-card"><div class="kpi-icon green">💡</div><div><div class="kpi-num" style="color:var(--green)">11</div><div class="kpi-label">도출된 아이디어</div></div></div>
-  <div class="kpi-card"><div class="kpi-icon purple">🎯</div><div><div class="kpi-num" style="color:var(--accent2)">5</div><div class="kpi-label">수익화 전략 순위</div></div></div>
-</div>
-<!--KPI_END-->
-
-<div class="tabs">
-  <button class="tab-btn active" onclick="switchTab(this,'s1')">📊 수익화 유형 분류</button>
-  <button class="tab-btn" onclick="switchTab(this,'s2')">💡 아이디어 정리</button>
-  <button class="tab-btn" onclick="switchTab(this,'s3')">🎯 나만의 전략</button>
-</div>
-
-<!--SECTION1_START-->
-<div id="s1" class="tab-panel active">
-  <div class="section-label">수집된 컨텐츠 65건 · 유형별 분류</div>
-  <div class="board-grid">
-    <div>
-      <div class="col-header"><div class="col-dot dot1"></div><span class="col-title">자동화</span><span class="col-count">21건</span></div>
-      <div class="content-card t1"><div class="card-channel">윤자동</div><div class="card-title">AI가 16시간 만에 100만원 벌어온 과정 전부 공개 (클로드 코드 자동 판매)</div></div>
-      <div class="content-card t1"><div class="card-channel">윤자동</div><div class="card-title">강의로 5천만원 번 과정과 후기를 모두 공개합니다.</div></div>
-      <div class="content-card t1"><div class="card-channel">혼잡스</div><div class="card-title">클로드 직원 5명이 제 사이트로 알아서 돈 벌어줍니다 (ai 직원 세팅법 8가지)</div></div>
-      <div class="content-card t1"><div class="card-channel">혼잡스</div><div class="card-title">클로드로 당장 수익 만드는 확실한 방법 5가지 (500만원 쓰고 검증했습니다)</div></div>
-      <div class="content-card t1"><div class="card-channel">혼잡스</div><div class="card-title">8분안에 클로드로 돈벌리는 세팅 9가지 따라하기</div></div>
-      <div class="content-card t1"><div class="card-channel">태오의 실행</div><div class="card-title">클로드 코드 Routines로 잠자는 동안에도 일하는 AI 에이전트 만들기</div></div>
-      <div class="content-card t1"><div class="card-channel">CONNECT AI LAB</div><div class="card-title">"잠자는 동안 돈이 벌립니다" 스탠포드가 증명하고 구글로 구현한 'AI 자동 수익'</div></div>
-      <div class="content-card t1"><div class="card-channel">성공지식백과</div><div class="card-title">해외에서 난리난 천원으로 천만원급 웹사이트 만드는 미친 AI 기법</div></div>
-      <div class="content-card t1"><div class="card-channel">알파GOGOGO</div><div class="card-title">무료 배포! 블로그 글쓰기 챗GPT 프로젝트 기능으로 최적화!</div></div>
-      <div class="content-card t1"><div class="card-channel">오후다섯씨</div><div class="card-title">충격! 내가 자는 동안 지식이 쑎인다! 젠스파크 클로로 3총사 에이전트 시스템 구축</div></div>
-    </div>
-    <div>
-      <div class="col-header"><div class="col-dot dot2"></div><span class="col-title">유튜브</span><span class="col-count">10건</span></div>
-      <div class="content-card t2"><div class="card-channel">오은환의 하이라이트</div><div class="card-title">콘텐츠로 돈 버는 사람은 '이 생각'을 안 합니다</div></div>
-      <div class="content-card t2"><div class="card-channel">오은환의 하이라이트</div><div class="card-title">유튜브로 돈 어떻게 버는 걸까? 구독자 13만까지 수익 공개합니다!</div></div>
-      <div class="content-card t2"><div class="card-channel">RichTeller리치텔러</div><div class="card-title">AI 바이럴 그림채널 만들고 수익화 채널로 만드는 방법</div></div>
-      <div class="content-card t2"><div class="card-channel">RichTeller리치텔러</div><div class="card-title">요즘 뜨는 바이럴 AI생성 이야기 쇼츠로 돈버는 방법 (완전 무료)</div></div>
-      <div class="content-card t2"><div class="card-channel">온라인프리덤</div><div class="card-title">회사 다니며 하루 3시간, AI로 뮤직비디오 만들어서 1억 벌게 된 30대</div></div>
-      <div class="content-card t2"><div class="card-channel">동테크</div><div class="card-title">AI 숏츠 수익화 정말 가능할까요? (성과 인증!)</div></div>
-      <div class="content-card t2"><div class="card-channel">AI머니</div><div class="card-title">디즈니 스타일 AI 애니메이션 쇼츠 쉽게 만들기 (떡상 가능)</div></div>
-      <div class="content-card t2"><div class="card-channel">오후다섯씨</div><div class="card-title">[AI 따라만하세요-부업러편] 나만의 유투브 쇼츠를 제작하는 과정!</div></div>
-      <div class="content-card t2"><div class="card-channel">월천 알고리즘</div><div class="card-title">구글 Flow 캐릭터 일관성 해결! 1시간 안에 완성하는 고퀄리티 AI 영상</div></div>
-      <div class="content-card t2"><div class="card-channel">플러스젠</div><div class="card-title">[10분 완성] 그록으로 AI 애니메이션 영상 자연스럽고 길게 만드는 방법!</div></div>
-    </div>
-    <div>
-      <div class="col-header"><div class="col-dot dot3"></div><span class="col-title">플랫폼</span><span class="col-count">15건</span></div>
-      <div class="content-card t3"><div class="card-channel">저스트액션</div><div class="card-title">티스토리 블로그 하루 방문자 300명, 현실적인 구글애드센스 수익 공개</div></div>
-      <div class="content-card t3"><div class="card-channel">솔루션스타 아나브</div><div class="card-title">아무도 알려주지 않는 블로그 수익화 테크트리 이대로만 따라하세요!</div></div>
-      <div class="content-card t3"><div class="card-channel">성공지식백과</div><div class="card-title">5분만에 천만원짜리 웹사이트 만드는 클로드코드 스킬 3가지 공개</div></div>
-      <div class="content-card t3"><div class="card-channel">성공지식백과</div><div class="card-title">천만원짜리 웹사이트를 만원에 뚝딱 만드는 시대 | 클로드 코드 GPT 힙스필드AI 조합</div></div>
-      <div class="content-card t3"><div class="card-channel">알파GOGOGO</div><div class="card-title">프롬프트 1번으로 300만원짜리 웹사이트 만들었습니다</div></div>
-      <div class="content-card t3"><div class="card-channel">동기부여학과</div><div class="card-title">"망하지 않는 사업만 합니다", 5개의 SaaS 앱으로 월 3억 버는 남자</div></div>
-      <div class="content-card t3"><div class="card-channel">레벨업클라쓰</div><div class="card-title">수익화 가능? 무료로 나만의 앱을 만드는법! 구글 오팔 나노바나나</div></div>
-      <div class="content-card t3"><div class="card-channel">AI 겸임교수 이종범</div><div class="card-title">AI로 돈 버는 사람들의 비밀: 남들은 구독하는데 나는 직접 만들어 팹니다</div></div>
-      <div class="content-card t3"><div class="card-channel">크몽 kmong</div><div class="card-title">AI 영상 제작, 장비도 모델도 없는데 비용이 천차만별인 이유</div></div>
-      <div class="content-card t3"><div class="card-channel">노다지 AI</div><div class="card-title">블로그 수익화! 글만 넣지말고 이거 한 번 써보세요 | 인포그래피 가이드</div></div>
-    </div>
-    <div>
-      <div class="col-header"><div class="col-dot dot4"></div><span class="col-title">영상·음악</span><span class="col-count">10건</span></div>
-      <div class="content-card t4"><div class="card-channel">영상독학</div><div class="card-title">AI 영상으로 돈 버는 방법</div></div>
-      <div class="content-card t4"><div class="card-channel">혼잡스</div><div class="card-title">힉스필드로 돈버는 8가지 확실한 방법 - 만드는 방법 전부 공개</div></div>
-      <div class="content-card t4"><div class="card-channel">오후다섯씨</div><div class="card-title">무조건 먼저 시작하세요! 쉽게 시작하는 음악 수익화! Mureka AI 완벽 가이드</div></div>
-      <div class="content-card t4"><div class="card-channel">RichTeller리치텔러</div><div class="card-title">무료 AI도구로 요즘 뜨는 베이비 팟케스트 영상 쉽게 만드는법</div></div>
-      <div class="content-card t4"><div class="card-channel">부자탐사대</div><div class="card-title">2025년 돈벌기 제일 좋은 AI 영상 생성기 - 인비디오 AI</div></div>
-      <div class="content-card t4"><div class="card-channel">Route 9</div><div class="card-title">텍스트 몇자, 이미지 한장으로 큰 돈 벌어봅시다! | Tripo AI 리뷰</div></div>
-      <div class="content-card t4"><div class="card-channel">동테크</div><div class="card-title">구글 AI '나노바나나' 쉬운 수익화 사례(이미지 생성으로 가치 창출)</div></div>
-      <div class="content-card t4"><div class="card-channel">닥또리</div><div class="card-title">AI 립싱크 4개 비교했더니⚡아무거나 쓰면 돈 버립니다</div></div>
-      <div class="content-card t4"><div class="card-channel">왼손 WENSON AI</div><div class="card-title">100% AI 영상 자동화 수익 창출 비법 공개!</div></div>
-      <div class="content-card t4"><div class="card-channel">얼간이작곡가</div><div class="card-title">Suno AI로 대충 뽑아 올리던 시대는 끝났습니다. (음원 수익화 불가능해진 이유)</div></div>
-    </div>
-    <div>
-      <div class="col-header"><div class="col-dot dot5"></div><span class="col-title">기타</span><span class="col-count">9건</span></div>
-      <div class="content-card t5"><div class="card-channel">윤자동</div><div class="card-title">퇴사하고 AI 올인하지 마세요 (18년차가 실제로 퇴사한 시점)</div></div>
-      <div class="content-card t5"><div class="card-channel">혼잡스</div><div class="card-title">내가 하루 30분 부업하고 월 100만원 이상 벌었던 확실한 부업들 TOP5</div></div>
-      <div class="content-card t5"><div class="card-channel">커리어해커 알렉스</div><div class="card-title">메타 개발자가 육아하면서 부업 4개 돌리는 유일한 방법</div></div>
-      <div class="content-card t5"><div class="card-channel">동기부여학과</div><div class="card-title">요즘은 혼자서 10억 법니다 (6단계 완벽 가이드)</div></div>
-      <div class="content-card t5"><div class="card-channel">AI Gallery</div><div class="card-title">미쳤다.. AI를 이렇게도 활용한다고? [무료 전자책 제공]</div></div>
-      <div class="content-card t5"><div class="card-channel">고민해결해주는남자</div><div class="card-title">AI 이렇게 써야 돈 벌 수 있습니다 │ AI 시대 살아남는 사람들의 공통점</div></div>
-      <div class="content-card t5"><div class="card-channel">인생치트키 민님</div><div class="card-title">AI로 시간 아꼈다면 이젠 돈 되는 시도를 해야 할 때</div></div>
-      <div class="content-card t5"><div class="card-channel">동테크</div><div class="card-title">AI로 돈 버는 사람들의 하루 1탄 -나민수 대표-</div></div>
-      <div class="content-card t5"><div class="card-channel">조조월드</div><div class="card-title">(실전편②)🤖ChatGPT로 동화책 주제, 제목, 등장인물, 줄거리까지 다 만들자!</div></div>
-    </div>
+  <div class="meta">
+    <div>분석 기간: 2026-09-10 ~ 2026-09-17</div>
+    <div>최종 갱신: 2026-09-17 (매주 월요일 자동 업데이트)</div>
   </div>
-</div>
-<!--SECTION1_END-->
+</header>
 
-<!--SECTION2_START-->
-<div id="s2" class="tab-panel">
-  <div class="section-label">분석된 아이디어 11개 · 유형별 정리</div>
-  <div class="board-grid">
-    <div>
-      <div class="col-header"><div class="col-dot dot1"></div><span class="col-title">자동화</span></div>
-      <div class="idea-card t1"><div class="idea-name">AI 에이전트 자동화 시스템 구축 교육·판매</div><div class="idea-meta"><span class="idea-badge badge-high">높음</span><span class="idea-count">🔁 10회</span></div></div>
-      <div class="idea-card t1"><div class="idea-name">블로그·GPTs 자동화 배포 및 수익화</div><div class="idea-meta"><span class="idea-badge badge-high">높음</span><span class="idea-count">🔁 5회</span></div></div>
-      <div class="idea-card t1"><div class="idea-name">AI 광고 영상 자동 생성 파이프라인</div><div class="idea-meta"><span class="idea-badge badge-mid">중간</span><span class="idea-count">🔁 5회</span></div></div>
+<div class="container">
+
+  <!-- KPI -->
+  <div class="section-title">📈 이번 주 수집 현황</div>
+  <div class="kpi-grid">
+    <div class="kpi-card blue"><div class="val">77</div><div class="label">구글시트 신규 영상</div></div>
+    <div class="kpi-card yellow"><div class="val">13</div><div class="label">채널 필터 통과</div></div>
+    <div class="kpi-card green"><div class="val">9</div><div class="label">키워드 필터 통과</div></div>
+    <div class="kpi-card green"><div class="val">9</div><div class="label">수집함 신규 추가</div></div>
+    <div class="kpi-card blue"><div class="val">6</div><div class="label">아이디어 횟수 업데이트</div></div>
+    <div class="kpi-card yellow"><div class="val">5</div><div class="label">전략 항목 유지</div></div>
+  </div>
+
+  <!-- 수집함 -->
+  <div class="section-title">📥 이번 주 수집 콘텐츠 (신규 9건)</div>
+  <div class="card-grid">
+    <div class="item-card type4">
+      <span class="badge type4">유형4 영상·음악</span>
+      <div class="item-title">영상AI툴 뭐 써야 할지 잘 모르겠다면? 일단 이거 쓰세요</div>
+      <div class="item-meta"><span>알면좋을AI공학 AIEDU</span><span>2026-09-16</span></div>
+      <div class="tags"><span class="tag">Kling</span><span class="tag">KlingAI</span><span class="tag">AI영상</span></div>
+      <a class="item-link" href="https://youtube.com/watch?v=aZKdxNGmhAk" target="_blank">▶ 유튜브 보기</a>
     </div>
-    <div>
-      <div class="col-header"><div class="col-dot dot2"></div><span class="col-title">유튜브</span></div>
-      <div class="idea-card t2"><div class="idea-name">AI 유튜브 쇼츠 채널 운영 수익화</div><div class="idea-meta"><span class="idea-badge badge-mid">중간</span><span class="idea-count">🔁 7회</span></div></div>
+    <div class="item-card type4">
+      <span class="badge type4">유형4 영상·음악</span>
+      <div class="item-title">한의원 AI브랜드필름 제작과정 공개합니다</div>
+      <div class="item-meta"><span>영상독학</span><span>2026-09-16</span></div>
+      <div class="tags"><span class="tag">AI영상</span><span class="tag">외주</span><span class="tag">브랜드필름</span></div>
+      <a class="item-link" href="https://youtube.com/watch?v=XZFt5XCzbFM" target="_blank">▶ 유튜브 보기</a>
     </div>
-    <div>
-      <div class="col-header"><div class="col-dot dot3"></div><span class="col-title">플랫폼</span></div>
-      <div class="idea-card t3"><div class="idea-name">웹사이트·SaaS 앱 제작 및 판매</div><div class="idea-meta"><span class="idea-badge badge-high">높음</span><span class="idea-count">🔁 6회</span></div></div>
-      <div class="idea-card t3"><div class="idea-name">블로그 애드센스·티스토리 수익화</div><div class="idea-meta"><span class="idea-badge badge-high">높음</span><span class="idea-count">🔁 5회</span></div></div>
-      <div class="idea-card t3"><div class="idea-name">크몽 AI 영상·자동화 외주 서비스</div><div class="idea-meta"><span class="idea-badge badge-mid">중간</span><span class="idea-count">🔁 3회</span></div></div>
+    <div class="item-card type4">
+      <span class="badge type4">유형4 영상·음악</span>
+      <div class="item-title">영상프롬프트는 아스트라 보단 클로드입니다.</div>
+      <div class="item-meta"><span>영상독학</span><span>2026-09-15</span></div>
+      <div class="tags"><span class="tag">클로드</span><span class="tag">프롬프트</span><span class="tag">AI영상</span></div>
+      <a class="item-link" href="https://youtube.com/watch?v=MeMZCR-bmao" target="_blank">▶ 유튜브 보기</a>
     </div>
-    <div>
-      <div class="col-header"><div class="col-dot dot4"></div><span class="col-title">영상·음악</span></div>
-      <div class="idea-card t4"><div class="idea-name">AI 뮤직비디오·영상 제작 대행</div><div class="idea-meta"><span class="idea-badge badge-mid">중간</span><span class="idea-count">🔁 5회</span></div></div>
-      <div class="idea-card t4"><div class="idea-name">AI 이미지·영상 생성 수익화 서비스</div><div class="idea-meta"><span class="idea-badge badge-low">낮음</span><span class="idea-count">🔁 5회</span></div></div>
+    <div class="item-card type1">
+      <span class="badge type1">유형1 자동화</span>
+      <div class="item-title">GPT-6 Astra로 블로그 글·이미지·발행까지, 말로 시켜봤습니다</div>
+      <div class="item-meta"><span>윤자동</span><span>2026-09-14</span></div>
+      <div class="tags"><span class="tag">GPT-6</span><span class="tag">블로그자동화</span><span class="tag">Astra</span></div>
+      <a class="item-link" href="https://youtube.com/watch?v=hcyz7TnSn_Q" target="_blank">▶ 유튜브 보기</a>
     </div>
-    <div>
-      <div class="col-header"><div class="col-dot dot5"></div><span class="col-title">기타</span></div>
-      <div class="idea-card t5"><div class="idea-name">전자책·AI 활용 가이드 판매</div><div class="idea-meta"><span class="idea-badge badge-high">높음</span><span class="idea-count">🔁 4회</span></div></div>
-      <div class="idea-card t5"><div class="idea-name">AI 부업 vs 전업 전략 콘텐츠 수익화</div><div class="idea-meta"><span class="idea-badge badge-mid">중간</span><span class="idea-count">🔁 1회</span></div></div>
+    <div class="item-card type1">
+      <span class="badge type1">유형1 자동화</span>
+      <div class="item-title">AI 좀 쓰는 사람이 코덱스 알려드림 | Codex 왕초보 가이드 2026</div>
+      <div class="item-meta"><span>윤자동</span><span>2026-09-14</span></div>
+      <div class="tags"><span class="tag">Codex</span><span class="tag">업무자동화</span><span class="tag">엑셀</span></div>
+      <a class="item-link" href="https://youtube.com/watch?v=p4QV5ebJDlA" target="_blank">▶ 유튜브 보기</a>
+    </div>
+    <div class="item-card type1">
+      <span class="badge type1">유형1 자동화</span>
+      <div class="item-title">아스트라! 클로드 페이블을 넘어섰다? 6가지 비교분석 l AI이미지, 영상프롬프트</div>
+      <div class="item-meta"><span>알면좋을AI공학 AIEDU</span><span>2026-09-13</span></div>
+      <div class="tags"><span class="tag">AI비교</span><span class="tag">AI에이전트</span><span class="tag">클로드</span></div>
+      <a class="item-link" href="https://youtube.com/watch?v=ynfRDOomU8w" target="_blank">▶ 유튜브 보기</a>
+    </div>
+    <div class="item-card type1">
+      <span class="badge type1">유형1 자동화</span>
+      <div class="item-title">쿠팡 주문 조사부터 엑셀 피벗·카톡 전송까지 | GPT-6 Astra 컴퓨터 유즈</div>
+      <div class="item-meta"><span>윤자동</span><span>2026-09-12</span></div>
+      <div class="tags"><span class="tag">쿠팡</span><span class="tag">업무자동화</span><span class="tag">GPT-6</span></div>
+      <a class="item-link" href="https://youtube.com/watch?v=7P_a-_QIWME" target="_blank">▶ 유튜브 보기</a>
+    </div>
+    <div class="item-card type4">
+      <span class="badge type4">유형4 영상·음악</span>
+      <div class="item-title">아스트라 대항마 클로드 페이블5.1 X 시댄스2.5 l 시네마 영상 만들기</div>
+      <div class="item-meta"><span>알면좋을AI공학 AIEDU</span><span>2026-09-10</span></div>
+      <div class="tags"><span class="tag">클로드</span><span class="tag">AI영상</span><span class="tag">시네마</span></div>
+      <a class="item-link" href="https://youtube.com/watch?v=PIKWQW86bCE" target="_blank">▶ 유튜브 보기</a>
+    </div>
+    <div class="item-card type2">
+      <span class="badge type2">유형2 유튜브</span>
+      <div class="item-title">AI영상제작 오프라인 스터디 ! 고수님들을 모셨습니다</div>
+      <div class="item-meta"><span>영상독학</span><span>2026-09-10</span></div>
+      <div class="tags"><span class="tag">AI영상</span><span class="tag">영상제작</span><span class="tag">스터디</span></div>
+      <a class="item-link" href="https://youtube.com/watch?v=B-xXGWg1p5o" target="_blank">▶ 유튜브 보기</a>
     </div>
   </div>
-</div>
-<!--SECTION2_END-->
 
-<!--SECTION3_START-->
-<div id="s3" class="tab-panel">
-  <div class="section-label">나만의 수익화 전략 · Claude 분석 기반 · 매주 자동 갱신</div>
-  <div class="strategy-grid">
+  <!-- 아이디어 DB -->
+  <div class="section-title">💡 아이디어 DB – 반복등장횟수 현황</div>
+  <table>
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>아이디어명</th>
+        <th>유형</th>
+        <th>반복횟수</th>
+        <th>변화</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td><strong>AI 에이전트 자동화 시스템 구축 교육·판매</strong></td>
+        <td><span class="badge type1">유형1</span></td>
+        <td>
+          <div class="count-bar">
+            <div class="bar" style="width:130px"></div>
+            <span>13</span>
+          </div>
+        </td>
+        <td><span class="up">▲ +3</span></td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><strong>AI 이미지·영상 생성 수익화 서비스</strong></td>
+        <td><span class="badge type4">유형4</span></td>
+        <td>
+          <div class="count-bar">
+            <div class="bar" style="width:80px"></div>
+            <span>8</span>
+          </div>
+        </td>
+        <td><span class="up">▲ +3</span></td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><strong>AI 유튜브 쇼츠 채널 운영 수익화</strong></td>
+        <td><span class="badge type2">유형2</span></td>
+        <td>
+          <div class="count-bar">
+            <div class="bar" style="width:80px"></div>
+            <span>8</span>
+          </div>
+        </td>
+        <td><span class="up">▲ +1</span></td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td>웹사이트·SaaS 앱 제작 및 판매</td>
+        <td><span class="badge" style="background:#fef9c3;color:#92400e">유형3</span></td>
+        <td>
+          <div class="count-bar">
+            <div class="bar" style="width:60px;background:#6366f1"></div>
+            <span>6</span>
+          </div>
+        </td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td><strong>AI 뮤직비디오·영상 제작 대행</strong></td>
+        <td><span class="badge type4">유형4</span></td>
+        <td>
+          <div class="count-bar">
+            <div class="bar" style="width:60px"></div>
+            <span>6</span>
+          </div>
+        </td>
+        <td><span class="up">▲ +1</span></td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td><strong>블로그·GPTs 자동화 배포 및 수익화</strong></td>
+        <td><span class="badge type1">유형1</span></td>
+        <td>
+          <div class="count-bar">
+            <div class="bar" style="width:60px"></div>
+            <span>6</span>
+          </div>
+        </td>
+        <td><span class="up">▲ +1</span></td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td>블로그 애드센스·티스토리 수익화</td>
+        <td><span class="badge" style="background:#fef9c3;color:#92400e">유형3</span></td>
+        <td>
+          <div class="count-bar">
+            <div class="bar" style="width:50px;background:#6366f1"></div>
+            <span>5</span>
+          </div>
+        </td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td>AI 광고 영상 자동 생성 파이프라인</td>
+        <td><span class="badge type1">유형1</span></td>
+        <td>
+          <div class="count-bar">
+            <div class="bar" style="width:50px"></div>
+            <span>5</span>
+          </div>
+        </td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td>전자책·AI 활용 가이드 판매</td>
+        <td><span class="badge" style="background:#f3e8ff;color:#6b21a8">유형5</span></td>
+        <td>
+          <div class="count-bar">
+            <div class="bar" style="width:40px;background:#8b5cf6"></div>
+            <span>4</span>
+          </div>
+        </td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td><strong>크몽 AI 영상·자동화 외주 서비스</strong></td>
+        <td><span class="badge" style="background:#fef9c3;color:#92400e">유형3</span></td>
+        <td>
+          <div class="count-bar">
+            <div class="bar" style="width:40px;background:#6366f1"></div>
+            <span>4</span>
+          </div>
+        </td>
+        <td><span class="up">▲ +1</span></td>
+      </tr>
+      <tr>
+        <td>11</td>
+        <td>AI 부업 vs 전업 전략 콘텐츠 수익화</td>
+        <td><span class="badge" style="background:#f3e8ff;color:#6b21a8">유형5</span></td>
+        <td>
+          <div class="count-bar">
+            <div class="bar" style="width:10px;background:#8b5cf6"></div>
+            <span>1</span>
+          </div>
+        </td>
+        <td>—</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 전략 DB -->
+  <div class="section-title">🎯 전략 DB – 적합도 순위 (박Park 맞춤)</div>
+  <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">전문상담교사 10년차 공무원 기준 · 겸직허가 필요 여부 · 사무실 단시간 투자 가능성 고려</p>
+  <div class="strategy-list">
     <div class="strategy-card">
-      <div class="strategy-head" style="border-top:3px solid var(--type1)">
-        <div class="strategy-rank" style="color:var(--type1)">1순위 · 자동화</div>
-        <div class="strategy-name">상담교사 AI<br>연수 콘텐츠 제작</div>
-      </div>
-      <div class="strategy-body">
-        <div class="strategy-row"><div class="strategy-key">방법</div><div class="strategy-val">AI 자동화를 상담교사 업무에 적용한 실사례 콘텐츠로 원격연수 제작 후 에듀집 등 연수원 등록 판매</div></div>
-        <div class="strategy-row"><div class="strategy-key">대상</div><div class="strategy-val">전국 상담교사 대상 연수</div></div>
-        <div class="strategy-row"><div class="strategy-key">롤모델</div><div class="strategy-val">오은환의 하이라이트, 혼잡스</div></div>
-        <div class="strategy-revenue">회당 3~5만원 / 월 100만원+ 목표</div>
+      <div class="rank-circle rank-1">1</div>
+      <div>
+        <div class="strategy-name">🏆 블로그 애드센스(티스토리) 수익화</div>
+        <div style="margin-bottom:4px"><span class="badge" style="background:#fef9c3;color:#92400e">유형3 플랫폼</span></div>
+        <div class="strategy-method">전문상담교사 전문성을 내세운 티스토리 블로그 개설 + AI 자동화로 글 쌓기 + 구글 애드센스 승인</div>
+        <div class="strategy-income">💰 예상수익: 승인 후 월 5~50만원 / 일간 방문자 300명 시 월 10~20만원</div>
+        <div class="strategy-fit">✅ 공무원 블로그 무수익 단계는 겸직허가 불필요. 사무실에서 틈틈이 작성 가능. 10년 상담 현장 경험이 콘텐츠 자산. AI 자동화로 관리 부담 최소화.</div>
       </div>
     </div>
     <div class="strategy-card">
-      <div class="strategy-head" style="border-top:3px solid var(--type2)">
-        <div class="strategy-rank" style="color:var(--type2)">2순위 · 유튜브</div>
-        <div class="strategy-name">AI 유튜브 쇼츠<br>채널 운영</div>
-      </div>
-      <div class="strategy-body">
-        <div class="strategy-row"><div class="strategy-key">방법</div><div class="strategy-val">AI로 제작한 바이럴 쇼츠 유튜브 채널 운영. 얼굴 노출 없이 사무실에서 틈틈이 제작 후 예약게시</div></div>
-        <div class="strategy-row"><div class="strategy-key">대상</div><div class="strategy-val">내러이티브 콘텐츠 소비 대중</div></div>
-        <div class="strategy-row"><div class="strategy-key">롤모델</div><div class="strategy-val">RichTeller리치텔러, AI 머니</div></div>
-        <div class="strategy-revenue">수익창출까지 3~6개월 / 월 10~50만원</div>
+      <div class="rank-circle rank-2">2</div>
+      <div>
+        <div class="strategy-name">🥈 상담교사 AI 연수 콘텐츠 제작</div>
+        <div style="margin-bottom:4px"><span class="badge type1">유형1 자동화</span></div>
+        <div class="strategy-method">AI 자동화를 상담교사 업무에 적용한 실사례 콘텐츠로 원격연수 제작 후 에듀집 등 연수원 등록 판매</div>
+        <div class="strategy-income">💰 예상수익: 연수 회당 3~5만원 / 연간 다수 기관 연속 판매 시 월 100만원+ 목표</div>
+        <div class="strategy-fit">✅ 상담교사 니시장이 명확함. 1회 녹화로 지속 수익 발생. 현장 전문성이 콘텐츠 신뢰도 직결.</div>
       </div>
     </div>
     <div class="strategy-card">
-      <div class="strategy-head" style="border-top:3px solid var(--type3)">
-        <div class="strategy-rank" style="color:var(--type3)">3순위 · 플랫폼</div>
-        <div class="strategy-name">상담교사 전용<br>AI 웹앱 제작·판매</div>
-      </div>
-      <div class="strategy-body">
-        <div class="strategy-row"><div class="strategy-key">방법</div><div class="strategy-val">클로드 코드로 상담교사 전용 웹앱 제작 + 겸직허가 후 학교 납품 또는 개인 구독 판매</div></div>
-        <div class="strategy-row"><div class="strategy-key">대상</div><div class="strategy-val">전국 상담교사 (위클래스·위센터 운영 교사)</div></div>
-        <div class="strategy-row"><div class="strategy-key">롤모델</div><div class="strategy-val">AI 겸임교수 이종범, 다했니 다했어</div></div>
-        <div class="strategy-revenue">건당 30만원 / 100교 구독 시 월 500만원</div>
+      <div class="rank-circle rank-3">3</div>
+      <div>
+        <div class="strategy-name">🥉 상담교사 전용 AI 웹앱 제작 판매</div>
+        <div style="margin-bottom:4px"><span class="badge" style="background:#fef9c3;color:#92400e">유형3 플랫폼</span></div>
+        <div class="strategy-method">클로드 코드로 상담교사 전용 웹앱 제작 + 겸직허가 후 학교 납품 또는 개인 구독 판매</div>
+        <div class="strategy-income">💰 예상수익: 학교 납품 건당 30만원 / 개인 구독 월 5만원 / 100교 구독 시 월 500만원 목표</div>
+        <div class="strategy-fit">✅ 니시장이 명확함(현직 10년의 유일한 차별화). 학교예산 구매로 수익 규모화 가능. 겸직허가 후 판매하는 구조.</div>
       </div>
     </div>
     <div class="strategy-card">
-      <div class="strategy-head" style="border-top:3px solid var(--type3)">
-        <div class="strategy-rank" style="color:var(--type3)">4순위 · 플랫폼</div>
-        <div class="strategy-name">블로그 애드센스<br>(티스토리) 수익화</div>
-      </div>
-      <div class="strategy-body">
-        <div class="strategy-row"><div class="strategy-key">방법</div><div class="strategy-val">전문상담교사 전문성을 내세운 티스토리 블로그 개설 + AI 자동화로 글 쌓기 + 구글 애드센스 승인</div></div>
-        <div class="strategy-row"><div class="strategy-key">대상</div><div class="strategy-val">상담교사, 위클래스 운영 교사, AI 활용 관심 교사</div></div>
-        <div class="strategy-row"><div class="strategy-key">롤모델</div><div class="strategy-val">저스트액션 (티스토리 연구블로그)</div></div>
-        <div class="strategy-revenue">월 5~50만원 / 방문자 300명 시 월 10~20만원</div>
+      <div class="rank-circle rank-4">4</div>
+      <div>
+        <div class="strategy-name">AI 유튜브 쇼츠 채널 운영</div>
+        <div style="margin-bottom:4px"><span class="badge type2">유형2 유튜브</span></div>
+        <div class="strategy-method">AI로 제작한 바이럴 쇼츠 유튜브 채널 운영. 얼굴 노출 없이 가능하며 사무실에서 틈틈이 제작 후 예약게시로 운영</div>
+        <div class="strategy-income">💰 예상수익: 애드센스 수익창출까지 3~6개월 소요 / 콘텐츠 누적 후 월 10~50만원 목표</div>
+        <div class="strategy-fit">⚠️ 얼굴 노출 없이 가능 — 겸직허가 위험 미님. 사무실에서 제작 후 예약게시 가능. 다만 수익창출까지 장기 누적 필요.</div>
       </div>
     </div>
     <div class="strategy-card">
-      <div class="strategy-head" style="border-top:3px solid var(--type5)">
-        <div class="strategy-rank" style="color:var(--type5)">5순위 · 기타</div>
-        <div class="strategy-name">전자책·AI 활용<br>가이드 판매</div>
-      </div>
-      <div class="strategy-body">
-        <div class="strategy-row"><div class="strategy-key">방법</div><div class="strategy-val">상담교사 대상 AI 활용 가이드 전자책 제작, 무료 배포 후 유료 전환 또는 블로그 유입도구로 활용</div></div>
-        <div class="strategy-row"><div class="strategy-key">대상</div><div class="strategy-val">상담교사, 위클래스 운영 교사, 집단상담 담당자</div></div>
-        <div class="strategy-row"><div class="strategy-key">롤모델</div><div class="strategy-val">AI Gallery, 혼잡스</div></div>
-        <div class="strategy-revenue">1권당 9,900~29,000원 / 블로그 연계 간접 수익</div>
+      <div class="rank-circle rank-5">5</div>
+      <div>
+        <div class="strategy-name">전자책·AI 활용 가이드 판매</div>
+        <div style="margin-bottom:4px"><span class="badge" style="background:#f3e8ff;color:#6b21a8">유형5 기타</span></div>
+        <div class="strategy-method">상담교사 대상 AI 활용 가이드 전자책 제작, 무료 배포 후 유료 전환 또는 1순위 블로그 유입도구로 활용</div>
+        <div class="strategy-income">💰 예상수익: 무료 배포 단계 수익 0 / 유료 진입 시 1권당 9,900~29,000원</div>
+        <div class="strategy-fit">✅ 가장 빠른 시작 가능(코드 불필요). 겸직허가 불필요. 1순위 블로그와 연계해 유입도구로 활용 가능.</div>
       </div>
     </div>
   </div>
-</div>
-<!--SECTION3_END-->
 
-<div style="text-align:center;color:#aaa;font-size:12px;padding:8px 0;">
-  마지막 갱신: 2026-08-24 &nbsp;|&nbsp; 다음 자동 갱신: 2026-09-01 (월) 오전 9시
+  <!-- 이번 주 인사이트 -->
+  <div class="section-title">🔍 이번 주 주목 트렌드</div>
+  <div style="background:var(--card-bg);border-radius:10px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,0.07);">
+    <ul style="list-style:none;display:flex;flex-direction:column;gap:10px;">
+      <li>🤖 <strong>GPT-6 Astra·Codex 자동화</strong> — 윤자동 채널에서 Astra로 블로그 자동 발행, 쿠팡 업무자동화, Codex 입문 콘텐츠가 연속 업로드됨. 자동화 에이전트 트렌드 지속 상승 중.</li>
+      <li>🎬 <strong>AI 영상 제작 도구 경쟁</strong> — Kling AI, 클로드 페이블5.1, 시댄스2.5, Astra 간 성능 비교 콘텐츠 활발. AI영상 외주(영상독학 한의원 브랜드필름)도 실사례로 등장.</li>
+      <li>📝 <strong>블로그 자동화 재부상</strong> — GPT-6 Astra를 활용한 블로그 글쓰기+이미지+발행 일괄 자동화가 가능해짐. 블로그 수익화 아이디어 횟수 증가(5→6).</li>
+      <li>🏫 <strong>상담교사 맞춤 전략 유지</strong> — 이번 주 수집된 콘텐츠 중 상담교사 연수·웹앱과 직결되는 AI 자동화(Codex, Astra) 트렌드가 강함. 1·2순위 전략과 연계성 높음.</li>
+    </ul>
+  </div>
+
 </div>
 
-<script>
-function switchTab(btn,id){
-  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
-  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById(id).classList.add('active');
-}
-</script>
+<footer>
+  수익화 분석 대시보드 · 자동 생성 by Claude AI · 2026-09-17 · 다음 갱신: 2026-09-24 (월요일 09:00 KST)
+</footer>
 </body>
 </html>
