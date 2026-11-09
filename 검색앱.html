@@ -385,7 +385,7 @@ async function loadData() {
   try {
     const res = await fetch(SCRIPT_URL + '?q=');
     const json = await res.json();
-    allData = (json.items || []).map(item => {
+    allData = (json.items || []).slice().sort((a, b) => String(b.date || '').substring(0, 10).localeCompare(String(a.date || '').substring(0, 10))).map(item => {
       const cat = classifyContent(item);
       return { ...item, category: cat, mLevel: monetizeLevel(item, cat) };
     });

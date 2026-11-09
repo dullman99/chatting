@@ -397,7 +397,8 @@ async function loadData() {
   try {
     const res = await fetch(SCRIPT_URL + '?q=');
     const json = await res.json();
-    const rows = json.items || [];
+    // 업로드 날짜 최신순 정렬 (시트 행 순서와 무관하게)
+    const rows = (json.items || []).slice().sort((a, b) => String(b.date || '').substring(0, 10).localeCompare(String(a.date || '').substring(0, 10)));
 
     allData = [];
     const kwNormMap = {};
