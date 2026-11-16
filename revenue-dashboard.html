@@ -6,386 +6,727 @@
 <title>수익화 분석 대시보드</title>
 <style>
   :root {
-    --bg: #f5f6fa;
-    --card: #ffffff;
-    --border: #e2e8f0;
-    --text: #1a202c;
-    --text-sub: #718096;
-    --accent1: #f97316;
-    --accent2: #ef4444;
-    --accent3: #3b82f6;
-    --accent4: #8b5cf6;
-    --accent5: #6b7280;
-    --green: #10b981;
-    --yellow: #f59e0b;
-    --red: #ef4444;
-    --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.04);
-    --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.05);
+    --bg: #0f1117;
+    --surface: #1a1d2e;
+    --surface2: #242740;
+    --border: #2e3250;
+    --text: #e2e8f0;
+    --muted: #8892b0;
+    --accent: #7c6af7;
+    --accent2: #56cfb2;
+    --accent3: #f7b731;
+    --accent4: #fc5c65;
+    --type1: #f7843b;
+    --type2: #f74b4b;
+    --type3: #4b8ef7;
+    --type4: #9b59b6;
+    --type5: #95a5a6;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Apple SD Gothic Neo', 'Noto Sans KR', -apple-system, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
   /* Header */
-  .header { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); color: #fff; padding: 24px 24px 20px; }
-  .header h1 { font-size: 1.5rem; font-weight: 700; letter-spacing: -0.02em; }
-  .header p { margin-top: 4px; font-size: 0.85rem; color: #94a3b8; }
-
-  /* Container */
-  .container { max-width: 1100px; margin: 0 auto; padding: 20px 16px 40px; }
-
-  /* Section titles */
-  .section-title { font-size: 0.95rem; font-weight: 700; color: var(--text-sub); text-transform: uppercase; letter-spacing: 0.05em; margin: 28px 0 12px; display: flex; align-items: center; gap: 8px; }
-  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
-
-  /* KPI Grid */
-  .kpi-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
-  @media (min-width: 500px) { .kpi-grid { grid-template-columns: repeat(4, 1fr); } }
-  .kpi-card { background: var(--card); border-radius: 12px; padding: 16px; box-shadow: var(--shadow); border-left: 4px solid var(--accent3); }
-  .kpi-card:nth-child(1) { border-color: var(--accent3); }
-  .kpi-card:nth-child(2) { border-color: var(--accent1); }
-  .kpi-card:nth-child(3) { border-color: var(--green); }
-  .kpi-card:nth-child(4) { border-color: var(--red); }
-  .kpi-label { font-size: 0.72rem; color: var(--text-sub); font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; }
-  .kpi-value { font-size: 2rem; font-weight: 800; line-height: 1.1; margin-top: 6px; }
-  .kpi-desc { font-size: 0.72rem; color: var(--text-sub); margin-top: 4px; }
-
-  /* Badges */
-  .badge { display: inline-block; padding: 2px 8px; border-radius: 999px; font-size: 0.7rem; font-weight: 600; }
-  .badge-1 { background: #fff7ed; color: #c2410c; }
-  .badge-2 { background: #fef2f2; color: #b91c1c; }
-  .badge-3 { background: #eff6ff; color: #1d4ed8; }
-  .badge-4 { background: #f5f3ff; color: #6d28d9; }
-  .badge-5 { background: #f9fafb; color: #4b5563; border: 1px solid #e5e7eb; }
-  .pri-high { background: #fef2f2; color: #b91c1c; }
-  .pri-mid { background: #fefce8; color: #a16207; }
-  .pri-low { background: #f9fafb; color: #6b7280; }
-
-  /* Table */
-  .table-wrap { background: var(--card); border-radius: 12px; box-shadow: var(--shadow); overflow: hidden; }
-  table { width: 100%; border-collapse: collapse; font-size: 0.82rem; }
-  th { background: #f8fafc; padding: 10px 12px; text-align: left; font-weight: 600; color: var(--text-sub); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 1px solid var(--border); }
-  td { padding: 10px 12px; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: #f8fafc; }
-  .title-cell { max-width: 300px; }
-  .title-cell .main { font-weight: 500; color: var(--text); line-height: 1.4; }
-  .title-cell .sub { font-size: 0.72rem; color: var(--text-sub); margin-top: 2px; }
-
-  /* Idea cards */
-  .idea-grid { display: grid; gap: 10px; }
-  .idea-card { background: var(--card); border-radius: 10px; padding: 14px 16px; box-shadow: var(--shadow); display: flex; gap: 12px; align-items: flex-start; }
-  .idea-rank { min-width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1rem; font-weight: 800; background: #f1f5f9; color: var(--text-sub); }
-  .idea-rank.top { background: #fff7ed; color: var(--accent1); }
-  .idea-body { flex: 1; min-width: 0; }
-  .idea-name { font-weight: 700; font-size: 0.88rem; }
-  .idea-meta { margin-top: 4px; display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
-  .idea-summary { margin-top: 6px; font-size: 0.75rem; color: var(--text-sub); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .repeat-pill { background: #eff6ff; color: #1d4ed8; border-radius: 999px; padding: 2px 8px; font-size: 0.7rem; font-weight: 700; }
-
-  /* Strategy cards */
-  .strat-grid { display: grid; gap: 12px; }
-  @media (min-width: 700px) { .strat-grid { grid-template-columns: 1fr 1fr; } }
-  .strat-card { background: var(--card); border-radius: 12px; padding: 16px; box-shadow: var(--shadow); border-top: 3px solid var(--accent3); position: relative; overflow: hidden; }
-  .strat-card:nth-child(1) { border-color: var(--red); }
-  .strat-card:nth-child(2) { border-color: var(--accent1); }
-  .strat-card:nth-child(3) { border-color: var(--green); }
-  .strat-card:nth-child(4) { border-color: var(--accent3); }
-  .strat-card:nth-child(5) { border-color: var(--accent5); }
-  .strat-num { position: absolute; top: 12px; right: 14px; font-size: 2.5rem; font-weight: 900; color: #f1f5f9; line-height: 1; }
-  .strat-name { font-weight: 700; font-size: 0.9rem; padding-right: 30px; line-height: 1.4; }
-  .strat-income { margin-top: 6px; font-size: 0.75rem; color: var(--green); font-weight: 600; }
-  .strat-method { margin-top: 6px; font-size: 0.75rem; color: var(--text-sub); line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-  .strat-updated { margin-top: 8px; font-size: 0.65rem; color: #cbd5e1; }
-
-  /* Notice */
-  .notice { background: #fffbeb; border: 1px solid #fcd34d; border-radius: 8px; padding: 10px 14px; font-size: 0.78rem; color: #92400e; margin-bottom: 4px; }
-
+  .header {
+    background: linear-gradient(135deg, #1a1d2e 0%, #242740 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .header-left h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.3px;
+  }
+  .header-left p {
+    color: var(--muted);
+    font-size: 12px;
+    margin-top: 2px;
+  }
+  .badge-run {
+    background: rgba(124,106,247,0.15);
+    color: var(--accent);
+    border: 1px solid rgba(124,106,247,0.3);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  /* Main layout */
+  .main { padding: 20px 16px; max-width: 960px; margin: 0 auto; }
+  /* Section header */
+  .section-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-title span { color: var(--accent); font-size: 16px; }
+  /* KPI grid */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .kpi-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--kpi-color, var(--accent));
+  }
+  .kpi-label {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+  .kpi-value {
+    font-size: 26px;
+    font-weight: 800;
+    color: var(--kpi-color, var(--accent));
+    line-height: 1;
+  }
+  .kpi-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  /* Alert box */
+  .alert-box {
+    background: rgba(247,183,49,0.08);
+    border: 1px solid rgba(247,183,49,0.25);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    color: #f7c948;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .alert-box .icon { font-size: 14px; flex-shrink: 0; }
+  /* Cards for 수집함 */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .content-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+    transition: border-color 0.2s;
+  }
+  .content-card:hover { border-color: var(--accent); }
+  .card-channel {
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .card-channel-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent2);
+    flex-shrink: 0;
+  }
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .card-meta {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .type-badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .type1 { background: rgba(247,132,59,0.15); color: var(--type1); }
+  .type2 { background: rgba(247,75,75,0.15); color: var(--type2); }
+  .type3 { background: rgba(75,142,247,0.15); color: var(--type3); }
+  .type4 { background: rgba(155,89,182,0.15); color: var(--type4); }
+  .type5 { background: rgba(149,165,166,0.15); color: var(--type5); }
+  .date-text { font-size: 11px; color: var(--muted); }
+  /* 아이디어 list */
+  .idea-list { margin-bottom: 24px; }
+  .idea-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 12px;
+    align-items: start;
+  }
+  .idea-rank {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--surface2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--muted);
+    flex-shrink: 0;
+  }
+  .idea-rank.top { background: rgba(124,106,247,0.2); color: var(--accent); }
+  .idea-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 3px;
+  }
+  .idea-summary {
+    font-size: 11px;
+    color: var(--muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.5;
+  }
+  .idea-count-wrap { text-align: right; flex-shrink: 0; }
+  .idea-count {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--accent3);
+    line-height: 1;
+  }
+  .idea-count-label { font-size: 10px; color: var(--muted); margin-top: 2px; }
+  .priority-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 1px 5px;
+    border-radius: 3px;
+    margin-top: 4px;
+  }
+  .p-high { background: rgba(252,92,101,0.15); color: #fc5c65; }
+  .p-mid { background: rgba(247,183,49,0.15); color: #f7b731; }
+  .p-low { background: rgba(149,165,166,0.15); color: #95a5a6; }
+  /* 전략 rankings */
+  .strategy-list { margin-bottom: 24px; }
+  .strategy-row {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    display: grid;
+    grid-template-columns: 32px 1fr;
+    gap: 12px;
+    align-items: start;
+    position: relative;
+    overflow: hidden;
+  }
+  .strategy-row::after {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--str-color, var(--accent));
+  }
+  .strategy-num {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: rgba(124,106,247,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--str-color, var(--accent));
+    flex-shrink: 0;
+  }
+  .strategy-name {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .strategy-income {
+    font-size: 11px;
+    color: var(--accent2);
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+  .strategy-reason {
+    font-size: 11px;
+    color: var(--muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.5;
+  }
   /* Footer */
-  footer { text-align: center; font-size: 0.72rem; color: var(--text-sub); padding: 20px 16px 32px; border-top: 1px solid var(--border); margin-top: 32px; }
+  .footer {
+    text-align: center;
+    padding: 20px 16px;
+    color: var(--muted);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+  }
+  .footer strong { color: var(--text); }
+  /* Divider */
+  .section-divider { height: 1px; background: var(--border); margin: 20px 0; }
+  /* 주간 처리 결과 */
+  .weekly-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .weekly-row:last-child { border-bottom: none; }
+  .weekly-step {
+    background: var(--surface2);
+    color: var(--muted);
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .weekly-desc { flex: 1; color: var(--text); }
+  .weekly-count {
+    font-weight: 700;
+    color: var(--accent2);
+    white-space: nowrap;
+  }
+  .weekly-warn { color: var(--accent3); }
+  @media (max-width: 600px) {
+    .header { flex-direction: column; align-items: flex-start; }
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  }
 </style>
 </head>
 <body>
 
 <div class="header">
-  <h1>📊 수익화 분석 대시보드</h1>
-  <p>전문상담교사 AI 투잡 수익화 — 주간 자동 분석 리포트</p>
+  <div class="header-left">
+    <h1>💰 수익화 분석 대시보드</h1>
+    <p>AI 채널 필터링 → 아이디어 분류 → 전략 갱신 자동 주간 리포트</p>
+  </div>
+  <div class="badge-run">🤖 2026년 11월 16일 자동 갱신</div>
 </div>
 
-<div class="container">
+<div class="main">
 
   <!-- KPI -->
-  <div class="section-title">주요 현황</div>
+  <div class="section-title"><span>📊</span> 이번 주 처리 현황</div>
   <div class="kpi-grid">
-    <div class="kpi-card">
-      <div class="kpi-label">총 수집 콘텐츠</div>
-      <div class="kpi-value" style="color: var(--accent3)">50</div>
-      <div class="kpi-desc">DB-수집함 누적</div>
+    <div class="kpi-card" style="--kpi-color:#7c6af7">
+      <div class="kpi-label">유튜브 데이터 확인</div>
+      <div class="kpi-value">11</div>
+      <div class="kpi-sub">샘플 조회 (전체 4,395건)</div>
     </div>
-    <div class="kpi-card">
-      <div class="kpi-label">수익화 아이디어</div>
-      <div class="kpi-value" style="color: var(--accent1)">13</div>
-      <div class="kpi-desc">DB-아이디어 등록</div>
+    <div class="kpi-card" style="--kpi-color:#56cfb2">
+      <div class="kpi-label">채널 필터 통과</div>
+      <div class="kpi-value">4</div>
+      <div class="kpi-sub">허용 채널 매칭</div>
     </div>
-    <div class="kpi-card">
-      <div class="kpi-label">실행 전략</div>
-      <div class="kpi-value" style="color: var(--green)">5</div>
-      <div class="kpi-desc">DB-전략 등록</div>
+    <div class="kpi-card" style="--kpi-color:#fc5c65">
+      <div class="kpi-label">키워드 필터 통과</div>
+      <div class="kpi-value">0</div>
+      <div class="kpi-sub">수익화 키워드 매칭</div>
     </div>
-    <div class="kpi-card">
-      <div class="kpi-label">이번 주 신규</div>
-      <div class="kpi-value" style="color: var(--red)">0</div>
-      <div class="kpi-desc">시트 조회 한계</div>
+    <div class="kpi-card" style="--kpi-color:#f7b731">
+      <div class="kpi-label">수집함 누적</div>
+      <div class="kpi-value">20+</div>
+      <div class="kpi-sub">Notion DB-수집함</div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:#9b59b6">
+      <div class="kpi-label">아이디어 등록</div>
+      <div class="kpi-value">13</div>
+      <div class="kpi-sub">Notion DB-아이디어</div>
+    </div>
+    <div class="kpi-card" style="--kpi-color:#4b8ef7">
+      <div class="kpi-label">전략 항목</div>
+      <div class="kpi-value">5</div>
+      <div class="kpi-sub">Notion DB-전략</div>
     </div>
   </div>
 
-  <div class="notice" style="margin-top:16px">
-    ⚠️ Google Sheets MCP는 전체 데이터가 아닌 샘플 행만 반환합니다. 이번 주 신규 콘텐츠 필터링이 완전하지 않을 수 있습니다. 최근 수집된 콘텐츠는 아래 DB-수집함 목록에서 직접 확인하세요.
+  <div class="alert-box">
+    <span class="icon">⚠️</span>
+    <div>
+      <strong>데이터 샘플링 주의:</strong> Google Sheets MCP 도구는 4,395행 중 약 11행만 반환했습니다.
+      이번 주 분석은 샘플 데이터 기준이며, 전체 데이터 접근 시 더 많은 수익화 콘텐츠가 발견될 수 있습니다.
+    </div>
   </div>
 
-  <!-- DB-수집함 -->
-  <div class="section-title">DB-수집함 — 최근 수집 콘텐츠</div>
-  <div class="table-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>제목</th>
-          <th>채널명</th>
-          <th>유형</th>
-          <th>업로드일</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td class="title-cell"><div class="main">내가 자는 동안에도 일하는 AI 직원, 직접 만들어봤습니다.</div></td>
-          <td><span class="badge badge-5">알린</span></td>
-          <td><span class="badge badge-5">유형5 기타</span></td>
-          <td>2026-10-23</td>
-        </tr>
-        <tr>
-          <td class="title-cell"><div class="main">인스타 수익화, 빠르게 월 300만원 만드는 방법 (오은환)</div></td>
-          <td><span class="badge badge-5">오은환의 하이라이트</span></td>
-          <td><span class="badge badge-2">유형2 유튜브</span></td>
-          <td>2026-10-17</td>
-        </tr>
-        <tr>
-          <td class="title-cell"><div class="main">"AI가 해야할 걸 전부 알려줘요" - 인스타그램 수익화 전략 공개 (오은환)</div></td>
-          <td><span class="badge badge-5">오은환의 하이라이트</span></td>
-          <td><span class="badge badge-2">유형2 유튜브</span></td>
-          <td>2026-10-18</td>
-        </tr>
-        <tr>
-          <td class="title-cell"><div class="main">AI로 우리 동네에서 돈 버는 방법 5가지 | 사장님들도 꼭 보세요</div></td>
-          <td><span class="badge badge-5">혼잡스</span></td>
-          <td><span class="badge badge-5">유형5 기타</span></td>
-          <td>2026-10-10</td>
-        </tr>
-        <tr>
-          <td class="title-cell"><div class="main">"AI 이렇게 써야 돈을 벌어요" 얼굴 공개도 안 했는데, 영상 1개로 매출 1억 만든 방법!</div></td>
-          <td><span class="badge badge-5">오은환의 하이라이트</span></td>
-          <td><span class="badge badge-5">유형5 기타</span></td>
-          <td>2026-10-12</td>
-        </tr>
-        <tr>
-          <td class="title-cell" colspan="4" style="color:var(--text-sub); font-size:0.78rem; padding:10px 12px;">
-            + 45건 추가 (채널 정보 없이 수집됨 — 초기 데이터)
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <!-- 주간 처리 결과 -->
+  <div class="section-title"><span>🔄</span> STEP별 처리 결과</div>
+  <div class="kpi-card" style="margin-bottom:24px; --kpi-color:var(--accent)">
+    <div class="weekly-row">
+      <span class="weekly-step">STEP 1</span>
+      <span class="weekly-desc">Google Sheets 유튜브_결과 시트 조회</span>
+      <span class="weekly-count">11건 (샘플)</span>
+    </div>
+    <div class="weekly-row">
+      <span class="weekly-step">STEP 2</span>
+      <span class="weekly-desc">허용 채널 필터 — 알면좋을AI공학 AIEDU, 혼잡스, 닥또리, AI 겸임교수 이종범</span>
+      <span class="weekly-count">4건 통과</span>
+    </div>
+    <div class="weekly-row">
+      <span class="weekly-step">STEP 3</span>
+      <span class="weekly-desc">수익화 키워드 필터 (수익화, 부업, 투잡, 돈벌, 애드센스 등)</span>
+      <span class="weekly-count weekly-warn">0건 통과</span>
+    </div>
+    <div class="weekly-row">
+      <span class="weekly-step">STEP 4</span>
+      <span class="weekly-desc">Notion DB-수집함 추가 (중복 제외)</span>
+      <span class="weekly-count">+0건 추가</span>
+    </div>
+    <div class="weekly-row">
+      <span class="weekly-step">STEP 5</span>
+      <span class="weekly-desc">Notion DB-아이디어 반복횟수 갱신</span>
+      <span class="weekly-count">변경 없음</span>
+    </div>
+    <div class="weekly-row">
+      <span class="weekly-step">STEP 6</span>
+      <span class="weekly-desc">Notion DB-전략 주간 갱신 메모 추가 (1순위 블로그전략)</span>
+      <span class="weekly-count">✅ 완료</span>
+    </div>
+    <div class="weekly-row">
+      <span class="weekly-step">STEP 7</span>
+      <span class="weekly-desc">HTML 대시보드 생성</span>
+      <span class="weekly-count">✅ 완료</span>
+    </div>
   </div>
 
-  <!-- DB-아이디어 -->
-  <div class="section-title">DB-아이디어 — 반복등장 순위</div>
-  <div class="idea-grid">
+  <!-- 수집함 최근 아이템 -->
+  <div class="section-title"><span>📥</span> DB-수집함 최근 콘텐츠</div>
+  <div class="cards-grid">
+    <div class="content-card">
+      <div class="card-channel"><div class="card-channel-dot"></div>알린</div>
+      <div class="card-title">내가 자는 동안에도 일하는 AI 직원, 직접 만들어봤습니다.</div>
+      <div class="card-meta">
+        <span class="type-badge type5">유형5 기타</span>
+        <span class="date-text">2026-10-23</span>
+      </div>
+    </div>
+    <div class="content-card">
+      <div class="card-channel"><div class="card-channel-dot"></div>오은환의 하이라이트</div>
+      <div class="card-title">인스타 수익화, 빠르게 월 300만원 만드는 방법 (오은환)</div>
+      <div class="card-meta">
+        <span class="type-badge type2">유형2 유튜브</span>
+        <span class="date-text">2026-10-17</span>
+      </div>
+    </div>
+    <div class="content-card">
+      <div class="card-channel"><div class="card-channel-dot"></div>오은환의 하이라이트</div>
+      <div class="card-title">"AI가 해야할 걸 전부 알려줘요" - 인스타그램 수익화 전략 공개</div>
+      <div class="card-meta">
+        <span class="type-badge type2">유형2 유튜브</span>
+        <span class="date-text">2026-10-18</span>
+      </div>
+    </div>
+    <div class="content-card">
+      <div class="card-channel"><div class="card-channel-dot"></div>혼잡스</div>
+      <div class="card-title">AI로 우리 동네에서 돈 버는 방법 5가지 | 사장님들도 꼭 보세요</div>
+      <div class="card-meta">
+        <span class="type-badge type5">유형5 기타</span>
+        <span class="date-text">2026-10-10</span>
+      </div>
+    </div>
+    <div class="content-card">
+      <div class="card-channel"><div class="card-channel-dot"></div>오은환의 하이라이트</div>
+      <div class="card-title">"AI 이렇게 써야 돈을 벌어요" 얼굴 공개도 안 했는데, 영상 1개로 매출 1억 만든 방법!</div>
+      <div class="card-meta">
+        <span class="type-badge type5">유형5 기타</span>
+        <span class="date-text">2026-10-12</span>
+      </div>
+    </div>
+    <div class="content-card">
+      <div class="card-channel"><div class="card-channel-dot"></div>기타 채널</div>
+      <div class="card-title">카드뉴스 매번 새로 만들지 마세요 | 코덱스로 반복 제작 자동화 2</div>
+      <div class="card-meta">
+        <span class="type-badge type1">유형1 자동화</span>
+        <span class="date-text">2026-10-01~</span>
+      </div>
+    </div>
+  </div>
 
-    <div class="idea-card">
+  <!-- 아이디어 -->
+  <div class="section-title"><span>💡</span> DB-아이디어 (반복등장순)</div>
+  <div class="idea-list">
+    <div class="idea-row">
       <div class="idea-rank top">1</div>
-      <div class="idea-body">
-        <div class="idea-name">AI 에이전트 자동화 시스템 구축 교육·판매</div>
-        <div class="idea-meta">
-          <span class="badge badge-1">유형1 자동화</span>
-          <span class="repeat-pill">🔁 15회</span>
-          <span class="badge pri-high">높음</span>
-        </div>
-        <div class="idea-summary">클로드/GPT 기반 AI 에이전트가 업무를 자동으로 처리하는 시스템을 구축하고, 이를 교육 연수 또는 템플릿으로 판매. '잠자는 동안 AI가 일한다'는 개념이 핵심.</div>
+      <div>
+        <div class="idea-title">AI 에이전트 자동화 시스템 구축 교육·판매</div>
+        <div class="idea-summary">클로드/GPT 기반 AI 에이전트가 업무를 자동으로 처리하는 시스템 구축 후 교육·템플릿 판매. '잠자는 동안 AI가 일한다' 개념 핵심.</div>
+        <span class="type-badge type1">유형1 자동화</span>
+        <span class="priority-badge p-high">높음</span>
+      </div>
+      <div class="idea-count-wrap">
+        <div class="idea-count">15</div>
+        <div class="idea-count-label">반복횟수</div>
       </div>
     </div>
-
-    <div class="idea-card">
+    <div class="idea-row">
       <div class="idea-rank top">2</div>
-      <div class="idea-body">
-        <div class="idea-name">AI 이미지·영상 생성 수익화 서비스</div>
-        <div class="idea-meta">
-          <span class="badge badge-4">유형4 영상·음악</span>
-          <span class="repeat-pill">🔁 9회</span>
-          <span class="badge pri-low">낮음</span>
-        </div>
-        <div class="idea-summary">AI 이미지·영상 생성 툴로 콘텐츠 대량 제작 후 스톡 판매 또는 외주 대행. 텍스트·이미지 한 장으로 3D 모델·영상 생성 등 새로운 수익 경로 계속 등장 중.</div>
+      <div>
+        <div class="idea-title">AI 이미지·영상 생성 수익화 서비스</div>
+        <div class="idea-summary">AI 이미지·영상 생성 툴로 콘텐츠 대량 제작 후 스톡 판매 또는 외주 대행.</div>
+        <span class="type-badge type4">유형4 영상·음악</span>
+        <span class="priority-badge p-low">낮음</span>
+      </div>
+      <div class="idea-count-wrap">
+        <div class="idea-count">9</div>
+        <div class="idea-count-label">반복횟수</div>
       </div>
     </div>
-
-    <div class="idea-card">
-      <div class="idea-rank top">2</div>
-      <div class="idea-body">
-        <div class="idea-name">AI 유튜브 쇼츠 채널 운영 수익화</div>
-        <div class="idea-meta">
-          <span class="badge badge-2">유형2 유튜브</span>
-          <span class="repeat-pill">🔁 9회</span>
-          <span class="badge pri-mid">중간</span>
-        </div>
-        <div class="idea-summary">클로드 코드·바이브코딩으로 웹사이트 또는 SaaS 앱을 빠르게 제작해 판매. 상담교사 전용 툴(상담일지 자동화, 위클래스 관리 앱 등)으로 특화 가능.</div>
+    <div class="idea-row">
+      <div class="idea-rank top">3</div>
+      <div>
+        <div class="idea-title">AI 유튜브 쇼츠 채널 운영 수익화</div>
+        <div class="idea-summary">AI 도구로 쇼츠 콘텐츠를 자동 생성·예약 게시. 얼굴 노출 없이 가능.</div>
+        <span class="type-badge type2">유형2 유튜브</span>
+        <span class="priority-badge p-mid">중간</span>
+      </div>
+      <div class="idea-count-wrap">
+        <div class="idea-count">9</div>
+        <div class="idea-count-label">반복횟수</div>
       </div>
     </div>
-
-    <div class="idea-card">
+    <div class="idea-row">
       <div class="idea-rank">4</div>
-      <div class="idea-body">
-        <div class="idea-name">블로그·GPTs 자동화 배포 및 수익화</div>
-        <div class="idea-meta">
-          <span class="badge badge-1">유형1 자동화</span>
-          <span class="repeat-pill">🔁 7회</span>
-          <span class="badge pri-high">높음</span>
-        </div>
-        <div class="idea-summary">블로그 글쓰기 자동화(ChatGPT 프로젝트 기능), GPTs 무료 배포로 유입 확보 후 수익 연결. 블로그 자동화부터 이미지 생성까지 원스톱 자동화 파이프라인 구축.</div>
+      <div>
+        <div class="idea-title">블로그·GPTs 자동화 배포 및 수익화</div>
+        <div class="idea-summary">블로그 글쓰기 자동화(ChatGPT 프로젝트 기능), GPTs 무료 배포로 유입 확보 후 수익 연결.</div>
+        <span class="type-badge type1">유형1 자동화</span>
+        <span class="priority-badge p-high">높음</span>
+      </div>
+      <div class="idea-count-wrap">
+        <div class="idea-count">7</div>
+        <div class="idea-count-label">반복횟수</div>
       </div>
     </div>
-
-    <div class="idea-card">
+    <div class="idea-row">
       <div class="idea-rank">5</div>
-      <div class="idea-body">
-        <div class="idea-name">웹사이트·SaaS 앱 제작 및 판매</div>
-        <div class="idea-meta">
-          <span class="badge badge-3">유형3 플랫폼</span>
-          <span class="repeat-pill">🔁 6회</span>
-          <span class="badge pri-high">높음</span>
-        </div>
-        <div class="idea-summary">클로드 코드·바이브코딩으로 웹사이트 또는 SaaS 앱을 빠르게 제작해 판매. '300만원짜리 웹사이트를 프롬프트 1번으로'가 핵심 메시지. 상담교사 전용 툴로 특화 가능.</div>
+      <div>
+        <div class="idea-title">웹사이트·SaaS 앱 제작 및 판매</div>
+        <div class="idea-summary">클로드 코드·바이브코딩으로 웹사이트 또는 SaaS 앱을 빠르게 제작해 판매.</div>
+        <span class="type-badge type3">유형3 플랫폼</span>
+        <span class="priority-badge p-high">높음</span>
+      </div>
+      <div class="idea-count-wrap">
+        <div class="idea-count">6</div>
+        <div class="idea-count-label">반복횟수</div>
       </div>
     </div>
-
-    <div class="idea-card">
-      <div class="idea-rank">5</div>
-      <div class="idea-body">
-        <div class="idea-name">블로그 애드센스·티스토리 수익화</div>
-        <div class="idea-meta">
-          <span class="badge badge-3">유형3 플랫폼</span>
-          <span class="repeat-pill">🔁 6회</span>
-          <span class="badge pri-high">높음</span>
-        </div>
-        <div class="idea-summary">티스토리 블로그에 AI 자동화로 글을 꾸준히 쌓아 구글 애드센스 수익 확보. 이슈성 키워드보다 전문 분야(상담, 교육, AI 활용) 키워드로 차별화.</div>
+    <div class="idea-row">
+      <div class="idea-rank">6</div>
+      <div>
+        <div class="idea-title">블로그 애드센스·티스토리 수익화</div>
+        <div class="idea-summary">티스토리 블로그에 AI 자동화로 글 쌓아 구글 애드센스 수익 확보. 월 100만원까지 성장 로드맵 검증됨.</div>
+        <span class="type-badge type3">유형3 플랫폼</span>
+        <span class="priority-badge p-high">높음</span>
+      </div>
+      <div class="idea-count-wrap">
+        <div class="idea-count">6</div>
+        <div class="idea-count-label">반복횟수</div>
       </div>
     </div>
-
-    <div class="idea-card">
-      <div class="idea-rank">5</div>
-      <div class="idea-body">
-        <div class="idea-name">AI 광고 영상 자동 생성 파이프라인</div>
-        <div class="idea-meta">
-          <span class="badge badge-1">유형1 자동화</span>
-          <span class="repeat-pill">🔁 6회</span>
-          <span class="badge pri-mid">중간</span>
-        </div>
-        <div class="idea-summary">AI 툴(Higgsfield 등)로 광고 영상을 자동 생성하는 파이프라인 구축. 외주 의뢰 수주 또는 자사 콘텐츠 제작에 활용.</div>
+    <div class="idea-row">
+      <div class="idea-rank">7</div>
+      <div>
+        <div class="idea-title">AI 광고 영상 자동 생성 파이프라인</div>
+        <div class="idea-summary">AI 툴로 광고 영상을 자동 생성하는 파이프라인 구축. 외주 수주 또는 자사 콘텐츠 제작에 활용.</div>
+        <span class="type-badge type1">유형1 자동화</span>
+        <span class="priority-badge p-mid">중간</span>
+      </div>
+      <div class="idea-count-wrap">
+        <div class="idea-count">6</div>
+        <div class="idea-count-label">반복횟수</div>
       </div>
     </div>
-
-    <div class="idea-card">
-      <div class="idea-rank">5</div>
-      <div class="idea-body">
-        <div class="idea-name">AI 뮤직비디오·영상 제작 대행</div>
-        <div class="idea-meta">
-          <span class="badge badge-4">유형4 영상·음악</span>
-          <span class="repeat-pill">🔁 6회</span>
-          <span class="badge pri-mid">중간</span>
-        </div>
-        <div class="idea-summary">Suno, Mureka 등 AI 음악 툴 + AI 영상 생성으로 뮤직비디오, 팟캐스트 영상 등 제작 대행. 음원 수익화(스트리밍 수익)와 영상 제작 외주 두 가지 수익 경로.</div>
+    <div class="idea-row">
+      <div class="idea-rank">8</div>
+      <div>
+        <div class="idea-title">AI 뮤직비디오·영상 제작 대행</div>
+        <div class="idea-summary">Suno, Mureka 등 AI 음악 툴 + AI 영상으로 뮤직비디오, 팟캐스트 영상 대행.</div>
+        <span class="type-badge type4">유형4 영상·음악</span>
+        <span class="priority-badge p-mid">중간</span>
+      </div>
+      <div class="idea-count-wrap">
+        <div class="idea-count">6</div>
+        <div class="idea-count-label">반복횟수</div>
       </div>
     </div>
-
-    <div class="idea-card">
+    <div class="idea-row">
       <div class="idea-rank">9</div>
-      <div class="idea-body">
-        <div class="idea-name">크몽 AI 영상·자동화 외주 서비스</div>
-        <div class="idea-meta">
-          <span class="badge badge-3">유형3 플랫폼</span>
-          <span class="repeat-pill">🔁 4회</span>
-          <span class="badge pri-mid">중간</span>
-        </div>
-        <div class="idea-summary">크몽 플랫폼에 AI 영상 제작, 자동화 구축, GPTs 개발 등 서비스를 등록해 외주 수주. 상담교사 전문성을 살린 '상담 자동화 컨설팅' 서비스 차별화 포인트.</div>
+      <div>
+        <div class="idea-title">크몽 AI 영상·자동화 외주 서비스</div>
+        <div class="idea-summary">크몽 플랫폼에 AI 영상 제작, 자동화 구축, GPTs 개발 등 서비스 등록해 외주 수주.</div>
+        <span class="type-badge type3">유형3 플랫폼</span>
+        <span class="priority-badge p-mid">중간</span>
+      </div>
+      <div class="idea-count-wrap">
+        <div class="idea-count">4</div>
+        <div class="idea-count-label">반복횟수</div>
       </div>
     </div>
-
-    <div class="idea-card">
-      <div class="idea-rank">9</div>
-      <div class="idea-body">
-        <div class="idea-name">전자책·AI 활용 가이드 판매</div>
-        <div class="idea-meta">
-          <span class="badge badge-5">유형5 기타</span>
-          <span class="repeat-pill">🔁 4회</span>
-          <span class="badge pri-high">높음</span>
-        </div>
-        <div class="idea-summary">AI 활용법, 자동화 노하우, 상담교사용 AI 도구 가이드 등을 전자책으로 제작해 무료 배포(유입 확보) 또는 유료 판매. 1회 제작으로 자동 판매 가능한 구조.</div>
+    <div class="idea-row">
+      <div class="idea-rank">10</div>
+      <div>
+        <div class="idea-title">전자책·AI 활용 가이드 판매</div>
+        <div class="idea-summary">AI 활용법, 자동화 노하우, 상담교사용 AI 도구 가이드 등을 전자책으로 제작해 판매.</div>
+        <span class="type-badge type5">유형5 기타</span>
+        <span class="priority-badge p-high">높음</span>
+      </div>
+      <div class="idea-count-wrap">
+        <div class="idea-count">4</div>
+        <div class="idea-count-label">반복횟수</div>
       </div>
     </div>
-
+    <div class="idea-row">
+      <div class="idea-rank">11</div>
+      <div>
+        <div class="idea-title">인스타그램 AI 콘텐츠 수익화</div>
+        <div class="idea-summary">얼굴 노출 없이 인스타그램 AI 콘텐츠로 고수익 달성 실증 사례. 겸직 제약 환경에서도 적용 가능.</div>
+        <span class="type-badge type5">유형5 기타</span>
+        <span class="priority-badge p-mid">중간</span>
+      </div>
+      <div class="idea-count-wrap">
+        <div class="idea-count">3</div>
+        <div class="idea-count-label">반복횟수</div>
+      </div>
+    </div>
+    <div class="idea-row">
+      <div class="idea-rank">12</div>
+      <div>
+        <div class="idea-title">AI 지역 소상공인 수익화 방법 소개</div>
+        <div class="idea-summary">AI를 활용해 지역 소상공인 수익 올리는 방법 소개 콘텐츠. 직접 적용보다 아이디어 참고용.</div>
+        <span class="type-badge type5">유형5 기타</span>
+        <span class="priority-badge p-low">낮음</span>
+      </div>
+      <div class="idea-count-wrap">
+        <div class="idea-count">2</div>
+        <div class="idea-count-label">반복횟수</div>
+      </div>
+    </div>
+    <div class="idea-row">
+      <div class="idea-rank">13</div>
+      <div>
+        <div class="idea-title">AI 부업 vs 전업 전략 콘텐츠</div>
+        <div class="idea-summary">직장 안정성 유지하면서 AI 부업 수익화를 단계적으로 확장하는 로드맵 콘텐츠.</div>
+        <span class="type-badge type5">유형5 기타</span>
+        <span class="priority-badge p-mid">중간</span>
+      </div>
+      <div class="idea-count-wrap">
+        <div class="idea-count">1</div>
+        <div class="idea-count-label">반복횟수</div>
+      </div>
+    </div>
   </div>
 
-  <!-- DB-전략 -->
-  <div class="section-title">DB-전략 — 나만의 수익화 전략</div>
-  <div class="strat-grid">
-
-    <div class="strat-card">
-      <div class="strat-num">1</div>
-      <div class="strat-name">1순위: 블로그 애드센스(티스토리) 수익화</div>
-      <span class="badge badge-3" style="margin-top:6px; display:inline-block;">유형3 플랫폼</span>
-      <div class="strat-income">💰 예상수익: 승인 후 월 5~50만원</div>
-      <div class="strat-method">전문상담교사 전문성을 내세운 티스토리 블로그 개설 + AI 자동화로 글 쌓기 + 구글 애드센스 승인. 겸직허가 불필요한 단계부터 시작.</div>
-      <div class="strat-updated">🔄 최종 갱신: 2026-11-09 (AI 자동화 채널 트렌드 계속 유효 확인)</div>
+  <!-- 전략 -->
+  <div class="section-title"><span>🎯</span> DB-전략 (추천 순위)</div>
+  <div class="strategy-list">
+    <div class="strategy-row" style="--str-color:#f7b731">
+      <div class="strategy-num" style="color:#f7b731">1</div>
+      <div>
+        <div class="strategy-name">블로그 애드센스 (티스토리) 수익화</div>
+        <div class="strategy-income">📈 승인 후 월 5~50만원 / 일간 방문자 300명 시 월 10~20만원</div>
+        <div class="strategy-reason">공무원 블로그 무수익 단계는 겸직허가 불필요. 사무실에서 든든히 작성 가능. 10년 상담 현장 경험이 콘텐츠 자산. AI 자동화로 관리 부담 최소화. [2026-11-16 갱신] 전략 지속 유효.</div>
+        <span class="type-badge type3" style="margin-top:6px;display:inline-block">유형3 플랫폼</span>
+      </div>
     </div>
-
-    <div class="strat-card">
-      <div class="strat-num">2</div>
-      <div class="strat-name">2순위: 상담교사 AI 연수 콘텐츠 제작</div>
-      <span class="badge badge-1" style="margin-top:6px; display:inline-block;">유형1 자동화</span>
-      <div class="strat-income">💰 예상수익: 연수 회당 3~5만원 / 월 100만원+ 목표</div>
-      <div class="strat-method">AI 자동화를 상담교사 업무에 적용한 실사례 콘텐츠로 원격연수 제작 후 에듀집 등 연수원 등록 판매. 1회 녹화로 지속 수익 발생.</div>
-      <div class="strat-updated">🔄 최종 갱신: 2026-10-26 (AI 직원 개념 연수 훅으로 활용 가능)</div>
+    <div class="strategy-row" style="--str-color:#7c6af7">
+      <div class="strategy-num" style="color:#7c6af7">2</div>
+      <div>
+        <div class="strategy-name">상담교사 AI 연수 콘텐츠 제작</div>
+        <div class="strategy-income">📈 연수 회당 3~5만원 / 연간 다수 기관 판매 시 월 100만원+ 목표</div>
+        <div class="strategy-reason">상담교사 니시장이 명확함. 1회 녹화로 지속 수익 발생. 현장 전문성이 콘텐츠 신뢰도 직결. 'AI가 대신 일하는 위클래스' 연수로 연결 가능.</div>
+        <span class="type-badge type1" style="margin-top:6px;display:inline-block">유형1 자동화</span>
+      </div>
     </div>
-
-    <div class="strat-card">
-      <div class="strat-num">3</div>
-      <div class="strat-name">3순위: 상담교사 전용 AI 웹앱 제작 판매</div>
-      <span class="badge badge-3" style="margin-top:6px; display:inline-block;">유형3 플랫폼</span>
-      <div class="strat-income">💰 예상수익: 학교 납품 건당 30만원 / 100교 구독 시 월 500만원</div>
-      <div class="strat-method">클로드 코드로 상담교사 전용 웹앱 제작 + 겸직허가 후 학교 납품 또는 개인 구독 판매. 니시장 명확 (현직 10년의 유일한 차별화).</div>
-      <div class="strat-updated">🔄 최종 갱신: 겸직허가 후 단계로 중장기 계획</div>
+    <div class="strategy-row" style="--str-color:#4b8ef7">
+      <div class="strategy-num" style="color:#4b8ef7">3</div>
+      <div>
+        <div class="strategy-name">상담교사 전용 AI 웹앱 제작 판매</div>
+        <div class="strategy-income">📈 학교 납품 건당 30만원 / 개인 구독 월 5만원 / 100교 구독 시 월 500만원 목표</div>
+        <div class="strategy-reason">니시장이 명확함 (현직 10년의 유일한 차별화). 학교예산 구매로 수익 규모화 가능. 겸직허가 후 판매하는 구조.</div>
+        <span class="type-badge type3" style="margin-top:6px;display:inline-block">유형3 플랫폼</span>
+      </div>
     </div>
-
-    <div class="strat-card">
-      <div class="strat-num">4</div>
-      <div class="strat-name">4순위: AI 유튜브 쇼츠 채널 운영</div>
-      <span class="badge badge-2" style="margin-top:6px; display:inline-block;">유형2 유튜브</span>
-      <div class="strat-income">💰 예상수익: 수익창출 후 월 10~50만원</div>
-      <div class="strat-method">AI로 제작한 바이럴 쇼츠 유튜브 채널 운영. 얼굴 노출 없이 가능하며 사무실에서 틈틈이 제작 후 예약게시로 운영.</div>
-      <div class="strat-updated">🔄 최종 갱신: 2026-11-09 (오후다섯씨 쇼츠 수익화 콘텐츠 계속 등장)</div>
+    <div class="strategy-row" style="--str-color:#f74b4b">
+      <div class="strategy-num" style="color:#f74b4b">4</div>
+      <div>
+        <div class="strategy-name">AI 유튜브 쇼츠 채널 운영</div>
+        <div class="strategy-income">📈 수익창출까지 3~6개월 / 콘텐츠 쌓인 후 월 10~50만원 목표</div>
+        <div class="strategy-reason">얼굴 노출 없이 가능 — 겸직허가 위험 미닒. 사무실에서 제작 후 예약게시 가능. 인스타 크로스포스팅 연계 전략 검토 권장.</div>
+        <span class="type-badge type2" style="margin-top:6px;display:inline-block">유형2 유튜브</span>
+      </div>
     </div>
-
-    <div class="strat-card">
-      <div class="strat-num">5</div>
-      <div class="strat-name">5순위: 전자책·AI 활용 가이드 판매</div>
-      <span class="badge badge-5" style="margin-top:6px; display:inline-block;">유형5 기타</span>
-      <div class="strat-income">💰 예상수익: 1권당 9,900~29,000원 / 블로그 연계 간접 수익</div>
-      <div class="strat-method">상담교사 대상 AI 활용 가이드 전자책 제작, 무료 배포 후 유료 전환 또는 1순위 블로그 유입도구로 활용. 가장 빠른 시작 가능.</div>
-      <div class="strat-updated">🔄 1순위 블로그와 연계 활용 권장</div>
+    <div class="strategy-row" style="--str-color:#95a5a6">
+      <div class="strategy-num" style="color:#95a5a6">5</div>
+      <div>
+        <div class="strategy-name">전자책·AI 활용 가이드 판매</div>
+        <div class="strategy-income">📈 무료 배포 단계 수익 0 / 유료 진입 시 1권당 9,900~29,000원</div>
+        <div class="strategy-reason">가장 빠른 시작 가능 (코드 불필요). 겸직허가 불필요. 1순위 블로그와 연계해 유입도구로 활용 가능.</div>
+        <span class="type-badge type5" style="margin-top:6px;display:inline-block">유형5 기타</span>
+      </div>
     </div>
-
   </div>
 
 </div>
 
-<footer>
-  마지막 업데이트: 2026-11-09 (매주 월요일 오전 9시 KST 자동 갱신) · 전문상담교사 AI 투잡 수익화 분석 시스템
-</footer>
+<div class="footer">
+  <strong>마지막 갱신: 2026년 11월 16일</strong> &nbsp;|&nbsp;
+  매주 월요일 오전 9시 KST 자동 실행 &nbsp;|&nbsp;
+  데이터: Google Sheets + Notion 3 DBs
+</div>
 
 </body>
 </html>
